@@ -1,0 +1,32 @@
+name: Executer la verification Nosey
+
+on:
+  schedule:
+    # Exécution automatique tous les jours à 08:00 UTC
+    - cron: '0 8 * * *'
+  # Permet aussi de lancer le script manuellement depuis l'onglet Actions de GitHub
+  workflow_dispatch:
+
+jobs:
+  run-moteur:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Exécuter le moteur de vérification
+        run: python scripts/moteur_verification.py
+
+      - name: Enregistrer les modifications dans le dépôt
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/fiches.json data/candidates.json
+          git commit -m "auto: mise a jour des fiches Nosey [skip ci]" || echo "Aucun changement a commiter"
+          git push
