@@ -14,5 +14,69 @@
     "source_url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:383567-1",
     "statut": "A_VERIFIER",
     "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091412365713",
+    "domaine": "NATURE",
+    "theme": "Champignon (nom vernaculaire)",
+    "sujet": "Oïdium de la betterave",
+    "fait_texte": "Erysiphe betae, l’Oïdium de la betterave, est une espèce de champignons pathogènes de la famille des Erysiphaceae. Il s'agit d'une forme d'oïdium qui peut affecter les cultures de betterave sucrière, ce qui peut entraîner une perte de rendement allant jusqu'à 30 %. Le champignon est présent dans le monde entier, dans les régions où la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Erysiphe_betae",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091412365861",
+    "domaine": "NATURE",
+    "theme": "Champignon (nom vernaculaire)",
+    "sujet": "Bolet jonquille",
+    "fait_texte": "Neoboletus praestigiator var. pseudosulphureus, le Bolet jonquille, auparavant Sutorius junquilleus ou Neoboletus pseusulphureus, est la variété jaune du Bolet à pied rouge appartenant au genre Neoboletus dans la famille des Boletaceae. Érigée auparavant en tant qu'espèce indépendante, cette variété rare se distingue du N. erythropus type par son chapeau, ses pores et son pied entièrement...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Bolet_jonquille",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "ING_2026091412365914",
+    "domaine": "INGENIERIE",
+    "theme": "Invention",
+    "sujet": "Phryctorie",
+    "fait_texte": "La Phryctorie est un système de sémaphore utilisé dans la Grèce antique. Les phryctoriae, des tours construites au sommet de certaines collines de manière qu'une tour soit visible de la tour suivante. Les tours étaient utilisées pour la transmission d'un message spécifique convenu à l'avance. Des fanaux enflammés étaient allumés sur une tour, puis la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Phryctorie",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "ING_2026091412370068",
+    "domaine": "INGENIERIE",
+    "theme": "Invention",
+    "sujet": "Invention (technique)",
+    "fait_texte": "Une invention est une méthode, une technique, un moyen nouveau par lequel il est possible de résoudre un problème pratique donné. Une invention est une création nouvelle. Elle est, en général, reconnue par la délivrance d'un brevet d'invention. On ne dépose pas un brevet, mais une demande de brevet.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Invention_(technique)",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
   }
 ]

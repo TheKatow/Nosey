@@ -77,6 +77,24 @@ def nettoyer_texte(texte_brut, max_mots=55):
         texte = " ".join(mots[:max_mots]) + "..."
     return texte
 
+def sujet_deja_existant(titre, candidates):
+    """Vérifie si le sujet existe dans candidates.json OU dans fiches.json."""
+    # 1. Vérification dans candidates.json
+    if any(c['sujet'].lower() == titre.lower() for c in candidates):
+        return True
+
+    # 2. Vérification dans fiches.json
+    if os.path.exists('data/fiches.json'):
+        try:
+            with open('data/fiches.json', 'r', encoding='utf-8') as f:
+                fiches = json.load(f)
+                if any(f_item['sujet'].lower() == titre.lower() for f_item in fiches):
+                    return True
+        except json.JSONDecodeError:
+            pass
+
+    return False
+
 def alimenter_candidates(domaine_cible=None, nb_par_domaine=2):
     """Génère des candidates pour un ou tous les domaines."""
     if os.path.exists(CANDIDATES_FILE):
