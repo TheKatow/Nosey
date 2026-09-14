@@ -87,7 +87,7 @@ def valider_candidate(candidate):
         return False, "Champs requis manquants"
 
     mots = fait.split()
-    if len(mots) < 25 or len(mots) > 80:
+    if len(mots) < 20 or len(mots) > 80:
         return False, f"Longueur de texte invalide ({len(mots)} mots)"
 
     fait_lower = fait.lower()
