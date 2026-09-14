@@ -389,5 +389,39 @@
     "source_url": "https://fr.wikipedia.org/wiki/Cochonnailles",
     "statut": "VALIDE",
     "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091416380275",
+    "domaine": "NATURE",
+    "theme": "Écosystème",
+    "sujet": "Nouveaux écosystèmes",
+    "fait_texte": "Le concept de nouveaux écosystèmes, traduction de novel ecosystems, parfois appelés emerging ecosystems ou no-analog communities, désigne des écosystèmes altérés par les êtres humains et caractérisés par des combinaisons inédites d’espèces.",
+    "image_url": "",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Nouveaux_%C3%A9cosyst%C3%A8mes",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091416380219",
+    "domaine": "NATURE",
+    "theme": "Écosystème",
+    "sujet": "Relation diversité-fonctionnement dans les écosystèmes",
+    "fait_texte": "La relation entre diversité et fonctionnement des écosystèmes est l’un des aspects de la relation entre structure et fonctionnement des écosystèmes. Les interactions intra- et interspécifiques, les facteurs abiotiques du biotope, sont d’autres composantes de la structure pouvant influencer les propriétés et le fonctionnement des écosystèmes.",
+    "image_url": "",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Relation_diversit%C3%A9-fonctionnement_dans_les_%C3%A9cosyst%C3%A8mes",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
   }
 ]

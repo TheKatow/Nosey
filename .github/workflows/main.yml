@@ -1,0 +1,93 @@
+name: Routine quotidienne Nosey
+
+on:
+  schedule:
+    # Exécution automatique chaque nuit à 03:00 UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  mise-a-jour-curiosites:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Exécution avec 3 tentatives (espacées d'une heure)
+        id: processus_recuperation
+        run: |
+          python - << 'EOF'
+          import subprocess
+          import time
+          import json
+          import os
+
+          MAX_TENTATIVES = 3
+          ATTENTE_SECONDES = 3600 # 1 heure
+          SUCCES = False
+
+          def compter_fiches_valides():
+              if os.path.exists('data/fiches.json'):
+                  try:
+                      with open('data/fiches.json', 'r', encoding='utf-8') as f:
+                          fiches = json.load(f)
+                          return len(fiches)
+                  except Exception:
+                      return 0
+              return 0
+
+          for essai in range(1, MAX_TENTATIVES + 1):
+              print(f"🔄 Tentative {essai}/{MAX_TENTATIVES}...")
+              
+              subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
+              subprocess.run(["python", "scripts/moteur_verification.py"], check=False)
+              subprocess.run(["python", "scripts/enrichir_images.py"], check=False)
+              
+              fiches_actuelles = compter_fiches_valides()
+              
+              if fiches_actuelles >= 2:
+                  print(f"✅ Succès ! {fiches_actuelles} fiches valides disponibles.")
+                  SUCCES = True
+                  break
+              else:
+                  print(f"⚠️ Moins de 2 fiches disponibles ({fiches_actuelles} trouvée(s)).")
+                  if essai < MAX_TENTATIVES:
+                      print("⏳ Attente de 1 heure avant la prochaine tentative...")
+                      time.sleep(ATTENTE_SECONDES)
+
+          if not SUCCES:
+              print("❌ Échec critique après 3 tentatives.")
+              exit(1)
+          EOF
+
+      - name: Commit et Push des modifications si succès
+        if: success()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/candidates.json data/fiches.json
+          
+          if git diff --staged --quiet; then
+            echo "Aucune modification à commiter."
+          else
+            git commit -m "🤖 [Automatique] Mise à jour quotidienne des fiches Nosey"
+            git push
+          fi
+
+- name: Notification ntfy en cas d'échec
+        if: failure()
+        run: |
+          curl \
+            -H "Title: 🚨 Alerte Nosey : Échec de la collecte" \
+            -H "Priority: high" \
+            -H "Tags: warning,nosey" \
+            -d "Le workflow a échoué après 3 tentatives sur 3 heures. Moins de 2 fiches valides sont disponibles dans la base." \
+            https://ntfy.sh/Nosey

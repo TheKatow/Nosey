@@ -124,9 +124,21 @@ function afficherFiche(fiche) {
 }
 
 function reagir(ficheId, typeReaction) {
-  // Quelle que soit la réaction, on verrouille la lecture pour aujourd'hui
-  enregistrerLectureAujourdhui(ficheId);
-  afficherEcranDejaLu();
+  const carteElement = document.querySelector('.carte');
+
+  if (carteElement) {
+    // 1. Ajouter la classe d'animation de sortie
+    carteElement.classList.add('carte-sortie');
+
+    // 2. Attendre la fin de l'animation CSS (300 ms) avant de verrouiller la lecture
+    setTimeout(() => {
+      enregistrerLectureAujourdhui(ficheId);
+      afficherEcranDejaLu();
+    }, 300);
+  } else {
+    enregistrerLectureAujourdhui(ficheId);
+    afficherEcranDejaLu();
+  }
 }
 
 function afficherEcranDejaLu() {
