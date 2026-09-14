@@ -110,5 +110,69 @@
     "source_url": "https://fr.wikipedia.org/wiki/Gravit%C3%A9_de_surface",
     "statut": "VALIDE",
     "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091412525952",
+    "domaine": "NATURE",
+    "theme": "Minéral",
+    "sujet": "Minéral nominalement anhydre",
+    "fait_texte": "Un minéral nominalement anhydre est un minéral qui ne contiendrait pas d'eau s'il était pur mais qui en comporte un tout petit peu sous la forme de défauts cristallins, suffisamment pour devoir être pris en considération.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Min%C3%A9ral_nominalement_anhydre",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091412530074",
+    "domaine": "NATURE",
+    "theme": "Minéral",
+    "sujet": "Eau liée",
+    "fait_texte": "En hydrologie, l’eau liée est une couche extrêmement fine d'eau qui entoure les surfaces minérales. En biologie, l’eau liée est intégrée aux structures moléculaires intra et intercellulaires, par opposition à l'eau libre ou eau circulante.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Eau_li%C3%A9e",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "CUL_2026091412530125",
+    "domaine": "CULTURE",
+    "theme": "Tradition populaire",
+    "sujet": "Noël",
+    "fait_texte": "Noël est la fête chrétienne d'origine romaine qui célèbre la Nativité, c'est-à-dire la célébration qui rappelle la naissance de Jésus-Christ. La fête de Noël vient peu de temps après le solstice d'hiver boréal auquel elle est historiquement associée. Du fait de la déchristianisation, la fête de Noël est aujourd'hui coupée de son fondement religieux dans...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/No%C3%ABl",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "CUL_2026091412530235",
+    "domaine": "CULTURE",
+    "theme": "Tradition populaire",
+    "sujet": "Traditions de Wallonie",
+    "fait_texte": "Les traditions de Wallonie sont nombreuses : célébrations religieuses, fêtes populaires, coutumes locales, vie associative, gastronomie… Elles sont vécues avec beaucoup de ferveur par la population et certaines d'entre elles sont reprises parmi les chefs-d’œuvre du Patrimoine oral et immatériel de la Fédération Wallonie-Bruxelles. Quelques-unes ont été reconnues comme chef-d'œuvre du patrimoine culturel immatériel de...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Traditions_de_Wallonie",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
   }
 ]
