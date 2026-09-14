@@ -174,5 +174,133 @@
     "source_url": "https://fr.wikipedia.org/wiki/Traditions_de_Wallonie",
     "statut": "VALIDE",
     "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091413033633",
+    "domaine": "NATURE",
+    "theme": "Arbre remarquable",
+    "sujet": "Liste des arbres les plus anciens",
+    "fait_texte": "Cet article recense les arbres les plus anciens connus, dont l'âge est confirmé par des sources fiables. Il existe plusieurs définitions de ce qui constitue un arbre individuel. De plus, l'âge des arbres peut être estimé de différentes façons. Ces méthodes comprennent le prélèvement de carottes pour dénombrer les cernes. Pour ces raisons, l'article présente...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Liste_des_arbres_les_plus_anciens",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091413033812",
+    "domaine": "NATURE",
+    "theme": "Arbre remarquable",
+    "sujet": "Liste d'arbres remarquables",
+    "fait_texte": "Cette liste est destinée à accueillir les arbres remarquables soit parce qu’ils battent des records de dimensions ou d’âge, soit parce qu’ils présentent des caractéristiques particulières et rares, soit parce qu’ils présentent un intérêt historique.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Liste_d'arbres_remarquables",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413040344",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Constitution physique",
+    "fait_texte": "La constitution physique est l'état du corps humain inné par opposition à la condition physique acquise, par exemple par le sport. On emploie également les termes « constitution corporelle » ou « constitution du corps ».",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Constitution_physique",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413040316",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Ligne médio-claviculaire",
+    "fait_texte": "Une ligne anatomique est une ligne conventionnelle tracée, souvent par imagination et pour des usages liés à la santé, sur la base de points et emplacements anatomiques. Elle peut ainsi guider certains gestes de nature thérapeutique à la manière d'un repérage. Une ligne anatomique suppose un compromis entre l'anatomie caractéristique d'une espèce donnée et la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ligne_anatomique",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413103746",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Ligne médiane ventrale",
+    "fait_texte": "Une ligne anatomique est une ligne conventionnelle tracée, souvent par imagination et pour des usages liés à la santé, sur la base de points et emplacements anatomiques. Elle peut ainsi guider certains gestes de nature thérapeutique à la manière d'un repérage. Une ligne anatomique suppose un compromis entre l'anatomie caractéristique d'une espèce donnée et la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ligne_anatomique",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413103865",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Ligne scapulaire",
+    "fait_texte": "Une ligne anatomique est une ligne conventionnelle tracée, souvent par imagination et pour des usages liés à la santé, sur la base de points et emplacements anatomiques. Elle peut ainsi guider certains gestes de nature thérapeutique à la manière d'un repérage. Une ligne anatomique suppose un compromis entre l'anatomie caractéristique d'une espèce donnée et la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ligne_anatomique",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "CUL_2026091413103932",
+    "domaine": "CULTURE",
+    "theme": "Tradition populaire",
+    "sujet": "Ethnopaléontologie",
+    "fait_texte": "L'ethnopaléontologie est la discipline scientifique qui étudie l'utilisation culturelle et cultuelle des fossiles par l'être humain. Ce sens actuel du terme a été établi au XXe siècle par les travaux d'Adrienne Mayor, de Philippe Taquet et d'Éric Buffetaut entre autres. Elle entretient des liens étroits avec la paléontologie, l'archéologie préhistorique et historique, l'étude des mythes...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🎨",
+      "passer": "🌫️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ethnopal%C3%A9ontologie",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "CUL_2026091413103983",
+    "domaine": "CULTURE",
+    "theme": "Tradition populaire",
+    "sujet": "Arts et traditions populaires",
+    "fait_texte": "Les arts et traditions populaires recouvrent deux domaines distincts:d'une part en occident des objets de la vie quotidienne, utilisés par les classes populaires et fabriqués artisanalement d'autre part des productions d'objets de certains groupes ethniques non occidentaux.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🎨",
+      "passer": "🌫️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Arts_et_traditions_populaires",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
   }
 ]
