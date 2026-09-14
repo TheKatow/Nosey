@@ -1,0 +1,34 @@
+[
+  {
+    "id": "NAT_VEG_0001",
+    "domaine": "NATURE",
+    "theme": "Végétal",
+    "sujet": "Le Bois de violette (Peltogyne)",
+    "fait_texte": "Originaire des forêts tropicales d'Amérique du Sud, le bois de cœur du Peltogyne est brun à la coupe. Son exposition à l’air et aux UV le transforme naturellement en un violet profond. Extrêmement dur, il est recherché en ébénisterie de luxe et pour fabriquer des instruments de musique.",
+    "localisation": "Amérique du Sud",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Wood Database",
+    "source_url": "https://www.wood-database.com/purpleheart/",
+    "statut": "VALIDE_100",
+    "date_validation": "2026-09-14"
+  },
+  {
+    "id": "NAT_VEG_0002",
+    "domaine": "NATURE",
+    "theme": "Végétal",
+    "sujet": "Le Gaïac (Guaiacum officinale)",
+    "fait_texte": "Présent en Amérique tropicale et dans les Caraïbes, le bois de gaïac est si dense qu'il coule dans l'eau. Gorgé d'une résine naturelle autolubrifiante et incassable, il a longtemps été utilisé pour fabriquer des roulements à billes et des hélices de navires.",
+    "localisation": "Amérique tropicale",
+    "emojis": {
+      "positif": "☀️",
+      "passer": "🌧️"
+    },
+    "source_nom": "Kew Royal Botanic Gardens",
+    "source_url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:840899-1",
+    "statut": "VALIDE_100",
+    "date_validation": "2026-09-14"
+  }
+]

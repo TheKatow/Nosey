@@ -1,0 +1,18 @@
+[
+  {
+    "id": "NAT_VEG_CAND_0001",
+    "domaine": "NATURE",
+    "theme": "Végétal",
+    "sujet": "Le Welwitschia mirabilis",
+    "fait_texte": "Originaire du désert du Namib, cette plante ne pousse que de deux feuilles tout au long de sa vie. Ces deux uniques rubans s'effilochent sous l'effet des vents du désert sur des siècles, donnant l'illusion d'un tas de feuilles entremêlées. Elle peut vivre plus de 1 500 ans en captant la rosée du matin.",
+    "localisation": "Désert du Namib",
+    "emojis": {
+      "positif": "🌵",
+      "passer": "💨"
+    },
+    "source_nom": "Kew Royal Botanic Gardens",
+    "source_url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:383567-1",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  }
+]
