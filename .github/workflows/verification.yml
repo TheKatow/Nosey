@@ -7,16 +7,20 @@ on:
   # Permet de lancer le workflow manuellement depuis l'onglet Actions sur GitHub
   workflow_dispatch:
 
+# Autorisation explicite d'écriture pour le bot GitHub Actions
+permissions:
+  contents: write
+
 jobs:
   run-nosey-pipeline:
     runs-on: ubuntu-latest
 
     steps:
       - name: Récupérer le code du dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configurer Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
@@ -27,6 +31,12 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/fiches.json data/candidates.json
-          git commit -m "auto: mise a jour du pipeline Nosey [skip ci]" || echo "Aucun changement a commiter"
-          git push
+          
+          # Vérification s'il y a des fichiers modifiés
+          if [ -n "$(git status --porcelain data/)" ]; then
+            git add data/fiches.json data/candidates.json
+            git commit -m "auto: mise a jour du pipeline Nosey"
+            git push
+          else
+            echo "Aucune modification détectée dans les fichiers JSON."
+          fi
