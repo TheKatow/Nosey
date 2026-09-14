@@ -158,12 +158,16 @@ def alimenter_candidates(nb_par_domaine=2):
             fait_texte = nettoyer_texte(extract)
             timestamp_id = datetime.now().strftime('%Y%m%d%H%M%S') + str(random.randint(10, 99))
 
+            # Récupération de l'image de vignette Wikipédia (si elle existe)
+            image_url = summary.get('thumbnail', {}).get('source', '')
+
             candidate = {
                 "id": f"{domaine[:3]}_{timestamp_id}",
                 "domaine": domaine,
                 "theme": cat_choisie.replace("Catégorie:", "").replace("_", " "),
                 "sujet": titre,
                 "fait_texte": fait_texte,
+                "image_url": image_url,
                 "localisation": "Monde",
                 "emojis": EMOJIS_DOMAINES.get(domaine, {"positif": "☀️", "passer": "🌧️"}),
                 "source_nom": "Wikipédia",

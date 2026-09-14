@@ -203,3 +203,21 @@ body {
 .btn-reset:hover {
   opacity: 0.9;
 }
+
+.carte.avec-image {
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+}
+
+.carte.avec-image .titre-sujet,
+.carte.avec-image .texte-fait,
+.carte.avec-image .lien-source,
+.carte.avec-image .theme-label {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.carte.avec-image .carte-footer {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}

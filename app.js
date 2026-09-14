@@ -148,16 +148,37 @@ function afficherEcranFinSujets() {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
 
+  const imageBackground = fiche.image_url 
+    ? `style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${fiche.image_url}'); color: white;"` 
+    : '';
+
   carteContainer.innerHTML = `
-    <div class="ecran-fin">
-      <div class="icon-fin">✨</div>
-      <h2>Stock temporairement vide</h2>
-      <p>Toutes les fiches actuellement disponibles ont été lues.</p>
-      <p class="sous-texte">De nouvelles curiosités sont ajoutées automatiquement chaque jour.</p>
-      <button class="btn-reset" onclick="reinitialiserHistorique()">
-        Réinitialiser l'historique (mode test)
-      </button>
-    </div>
+    <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine}" ${imageBackground}>
+      <header class="carte-header">
+        <span class="badge-domaine">${fiche.domaine}</span>
+        <span class="theme-label">${fiche.theme || ''}</span>
+      </header>
+
+      <div class="carte-corps">
+        <h2 class="titre-sujet">${fiche.sujet}</h2>
+        <p class="texte-fait">${fiche.fait_texte}</p>
+      </div>
+
+      <footer class="carte-footer">
+        <a href="${fiche.source_url}" target="_blank" rel="noopener noreferrer" class="lien-source">
+          Source : ${fiche.source_nom || 'Wikipédia'} ↗
+        </a>
+
+        <div class="actions-emojis">
+          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'passer')" title="Passer">
+            ${fiche.emojis?.passer || '🌧️'}
+          </button>
+          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'positif')" title="Intéressant">
+            ${fiche.emojis?.positif || '☀️'}
+          </button>
+        </div>
+      </footer>
+    </article>
   `;
 }
 
