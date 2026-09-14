@@ -49,6 +49,14 @@ CATEGORIES = {
     ]
 }
 
+EMOJIS_DOMAINES = {
+    "NATURE": {"positif": "🌿", "passer": "🍂"},
+    "SCIENCES": {"positif": "🔬", "passer": "💨"},
+    "HISTOIRE": {"positif": "📜", "passer": "⏳"},
+    "CULTURE": {"positif": "🎨", "passer": "🌫️"},
+    "INGENIERIE": {"positif": "⚙️", "passer": "🔩"}
+}
+
 def charger_json(fichier):
     if os.path.exists(fichier):
         try:
@@ -157,7 +165,7 @@ def alimenter_candidates(nb_par_domaine=2):
                 "sujet": titre,
                 "fait_texte": fait_texte,
                 "localisation": "Monde",
-                "emojis": {"positif": "☀️", "passer": "🌧️"},
+                "emojis": EMOJIS_DOMAINES.get(domaine, {"positif": "☀️", "passer": "🌧️"}),
                 "source_nom": "Wikipédia",
                 "source_url": summary.get('content_urls', {}).get('desktop', {}).get('page', ''),
                 "statut": "A_VERIFIER",
