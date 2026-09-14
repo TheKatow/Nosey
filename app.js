@@ -1,19 +1,32 @@
-// Clé utilisée dans le stockage local du navigateur pour le suivi utilisateur
+// Clés utilisées dans le stockage local du navigateur
 const STORAGE_KEY_VUS = 'nosey_fiches_vues';
+const STORAGE_KEY_DERNIERE_DATE = 'nosey_derniere_date_lecture';
 
 let fichesInedites = [];
-let ficheActuelleIndex = 0;
+let ficheDuJour = null;
 
 // -----------------------------------------------------------------------------
-// 1. Gestion du Stockage Local (Suivi Utilisateur)
+// 1. Utilitaires Date & Stockage Local
 // -----------------------------------------------------------------------------
 
-function obtenirFichesVues() {
-  const vues = localStorage.getItem(STORAGE_KEY_VUS);
-  return vues ? JSON.parse(vues) : [];
+function obtenirDateAujourdhui() {
+  const aujourdhui = new Date();
+  const annee = aujourdhui.getFullYear();
+  const mois = String(aujourdhui.getMonth() + 1).padStart(2, '0');
+  const jour = String(aujourdhui.getDate()).padStart(2, '0');
+  return `${annee}-${mois}-${jour}`;
 }
 
-function marquerCommeVue(ficheId) {
+function aDejaLuAujourdhui() {
+  const derniereDate = localStorage.getItem(STORAGE_KEY_DERNIERE_DATE);
+  return derniereDate === obtenirDateAujourdhui();
+}
+
+function enregistrerLectureAujourdhui(ficheId) {
+  // 1. Enregistrer la date du jour
+  localStorage.setItem(STORAGE_KEY_DERNIERE_DATE, obtenirDateAujourdhui());
+
+  // 2. Ajouter l'ID aux fiches vues pour ne plus la recharger ultérieurement
   const vues = obtenirFichesVues();
   if (!vues.includes(ficheId)) {
     vues.push(ficheId);
@@ -21,24 +34,29 @@ function marquerCommeVue(ficheId) {
   }
 }
 
+function obtenirFichesVues() {
+  const vues = localStorage.getItem(STORAGE_KEY_VUS);
+  return vues ? JSON.parse(vues) : [];
+}
+
 function filtrerFichesInedites(toutesLesFiches) {
   const vues = obtenirFichesVues();
   return toutesLesFiches.filter(fiche => !vues.includes(fiche.id));
 }
 
-// Optionnel : Réinitialiser l'historique si l'utilisateur souhaite tout revoir
+// Optionnel : Réinitialiser pour les tests
 function reinitialiserHistorique() {
   localStorage.removeItem(STORAGE_KEY_VUS);
+  localStorage.removeItem(STORAGE_KEY_DERNIERE_DATE);
   chargerFiches();
 }
 
 // -----------------------------------------------------------------------------
-// 2. Chargement des données avec Anti-Cache (Parade #4)
+// 2. Chargement des données
 // -----------------------------------------------------------------------------
 
 async function chargerFiches() {
   try {
-    // Timestamp dynamique pour contourner le cache navigateur
     const timestamp = new Date().getTime();
     const reponse = await fetch(`data/fiches.json?v=${timestamp}`);
     
@@ -47,35 +65,35 @@ async function chargerFiches() {
     }
 
     const toutesLesFiches = await reponse.json();
-    
-    // Filtrage pour ne garder que les fiches non lues par cet utilisateur
     fichesInedites = filtrerFichesInedites(toutesLesFiches);
-    ficheActuelleIndex = 0;
 
-    afficherFiche();
+    // Si une fiche a déjà été lue aujourd'hui, on bloque l'affichage
+    if (aDejaLuAujourdhui()) {
+      afficherEcranDejaLu();
+      return;
+    }
+
+    // Sinon, on sélectionne la première fiche inédite disponible
+    if (fichesInedites.length > 0) {
+      ficheDuJour = fichesInedites[0];
+      afficherFiche(ficheDuJour);
+    } else {
+      afficherEcranFinSujets();
+    }
   } catch (erreur) {
-    console.error("Erreur lors du chargement des fiches Nosey :", erreur);
-    afficherErreur("Impossible de charger les curiosités du jour.");
+    console.error("Erreur lors du chargement de la fiche Nosey :", erreur);
+    afficherErreur("Impossible de charger la curiosité du jour.");
   }
 }
 
 // -----------------------------------------------------------------------------
-// 3. Affichage et Interactions
+// 3. Affichage & Actions
 // -----------------------------------------------------------------------------
 
-function afficherFiche() {
+function afficherFiche(fiche) {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
 
-  // Si aucune fiche inédite n'est disponible
-  if (fichesInedites.length === 0 || ficheActuelleIndex >= fichesInedites.length) {
-    afficherEcranFin();
-    return;
-  }
-
-  const fiche = fichesInedites[ficheActuelleIndex];
-
-  // Injection du HTML de la carte avec émojis et badge domaine
   carteContainer.innerHTML = `
     <article class="carte" data-domaine="${fiche.domaine}">
       <header class="carte-header">
@@ -107,26 +125,37 @@ function afficherFiche() {
 }
 
 function reagir(ficheId, typeReaction) {
-  // 1. Enregistrer la fiche comme vue dans le localStorage
-  marquerCommeVue(ficheId);
-
-  // 2. Passer à la fiche suivante dans la file
-  ficheActuelleIndex++;
-  afficherFiche();
+  // Quelle que soit la réaction, on verrouille la lecture pour aujourd'hui
+  enregistrerLectureAujourdhui(ficheId);
+  afficherEcranDejaLu();
 }
 
-function afficherEcranFin() {
+function afficherEcranDejaLu() {
+  const carteContainer = document.getElementById('carte-container');
+  if (!carteContainer) return;
+
+  carteContainer.innerHTML = `
+    <div class="ecran-fin">
+      <div class="icon-fin">☀️</div>
+      <h2>À demain pour un nouveau fait !</h2>
+      <p>Vous avez déjà découvert votre curiosité du jour.</p>
+      <p class="sous-texte">Revenez demain pour une nouvelle anecdote vérifiée.</p>
+    </div>
+  `;
+}
+
+function afficherEcranFinSujets() {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
 
   carteContainer.innerHTML = `
     <div class="ecran-fin">
       <div class="icon-fin">✨</div>
-      <h2>Vous êtes à jour !</h2>
-      <p>Vous avez consulté toutes les curiosités disponibles pour le moment.</p>
-      <p class="sous-texte">De nouvelles fiches seront ajoutées lors de la prochaine mise à jour quotidienne.</p>
+      <h2>Stock temporairement vide</h2>
+      <p>Toutes les fiches actuellement disponibles ont été lues.</p>
+      <p class="sous-texte">De nouvelles curiosités sont ajoutées automatiquement chaque jour.</p>
       <button class="btn-reset" onclick="reinitialiserHistorique()">
-        Revoir les anciennes fiches
+        Réinitialiser l'historique (mode test)
       </button>
     </div>
   `;
