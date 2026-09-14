@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Générer les candidates par catégorie
+        run: python scripts/generateur_candidates.py
+
       - name: Exécuter le moteur de vérification et envoyer le récapitulatif Ntfy
         run: python scripts/moteur_verification.py
 
