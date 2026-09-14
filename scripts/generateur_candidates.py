@@ -5,8 +5,8 @@ import urllib.request
 import urllib.parse
 
 CANDIDATES_FILE = 'data/candidates.json'
+FICHES_FILE = 'data/fiches.json'
 
-# Liste de catégories/sujets de départ pour varier les domaines
 THEMES_INITIALS = [
     {"sujet": "Phryctorie", "domaine": "HISTOIRE", "theme": "Grèce antique"},
     {"sujet": "Effet Mpemba", "domaine": "SCIENCES", "theme": "Physique"},
@@ -31,28 +31,25 @@ def sauvegarder_json(fichier, donnees):
     with open(fichier, 'w', encoding='utf-8') as f:
         json.dump(donnees, f, ensure_ascii=False, indent=2)
 
+def charger_sujets_fiches_existantes():
+    """Charge la liste des sujets déjà validés et stockés dans fiches.json."""
+    fiches = charger_json(FICHES_FILE)
+    return {f.get('sujet', '').strip().lower() for f in fiches if f.get('sujet')}
+
 def rendre_fait_captivant(extract_texte):
-    """
-    Nettoie le texte Wikipédia et extrait une seconde phrase 
-    d'impact (chiffre, record, spécificité) pour rendre le fait intéressant.
-    """
     if not extract_texte:
         return ""
 
-    # Supprime les dates entre parenthèses, prononciations et appels de notes
     texte = re.sub(r'\([^)]*\)', '', extract_texte)
     texte = re.sub(r'\[[^\]]*\]', '', texte)
     texte = re.sub(r'\s+', ' ', texte).strip()
 
-    # Découpage en phrases
     phrases = re.split(r'(?<=[.!?])\s+', texte)
     if not phrases:
         return ""
 
     phrase_principale = phrases[0]
     phrase_anecdote = ""
-
-    # Mots-clés recherchant l'élément d'impact ou la valeur ajoutée
     mots_cles = ['premi', 'plus', 'unique', 'permet', 'utilis', 'grâce', 'découvert', 'record', 'km', 'siècle', 'particulier']
 
     for p in phrases[1:4]:
@@ -60,13 +57,11 @@ def rendre_fait_captivant(extract_texte):
             phrase_anecdote = p
             break
 
-    # Assemblage
     if phrase_anecdote and len(phrase_principale + " " + phrase_anecdote) <= 280:
         fait_final = f"{phrase_principale} {phrase_anecdote}"
     else:
         fait_final = phrase_principale
 
-    # Sécurité sur la longueur totale et la ponctuation
     if len(fait_final) > 280:
         fait_final = fait_final[:280].rsplit(' ', 1)[0].rstrip(' ,;:—–-') + '.'
 
@@ -84,10 +79,9 @@ def recuperer_fiche_wikipedia(element):
         req = urllib.request.Request(url_api, headers={'User-Agent': 'NoseyBot/1.0'})
         with urllib.request.urlopen(req, timeout=5) as resp:
             data = json.loads(resp.read().decode('utf-8'))
-            
             extract = data.get('extract', '')
             fait_texte = rendre_fait_captivant(extract)
-            
+
             if not fait_texte:
                 return None
 
@@ -106,31 +100,45 @@ def recuperer_fiche_wikipedia(element):
                 }
             }
     except Exception as e:
-        print(f"⚠️ Erreur lors de la récupération de '{sujet}' : {e}")
+        print(f"⚠️ Erreur récupération Wikipédia pour '{sujet}' : {e}")
         return None
 
 def main():
-    print("🚀 Génération des candidates...")
+    print("🚀 Vérification des candidates à générer...")
+    
+    # Récupération des sujets déjà validés dans fiches.json
+    sujets_fiches = charger_sujets_fiches_existantes()
     candidates_existantes = charger_json(CANDIDATES_FILE)
-    sujets_existants = {c.get('sujet') for c in candidates_existantes}
+    
+    # Dictionnaire des sujets déjà présents en attente dans candidates.json
+    sujets_candidates = {c.get('sujet', '').strip().lower() for c in candidates_existantes if c.get('sujet')}
 
     nouvelles_candidates = list(candidates_existantes)
     ajouts = 0
 
     for item in THEMES_INITIALS:
-        if item['sujet'] not in sujets_existants:
-            print(f"🔍 Traitement de : {item['sujet']}...")
-            fiche = recuperer_fiche_wikipedia(item)
-            if fiche:
-                nouvelles_candidates.append(fiche)
-                sujets_existants.add(item['sujet'])
-                ajouts += 1
+        sujet_cle = item['sujet'].strip().lower()
+        
+        # Le sujet est ignoré S'IL EST DÉJÀ DANS fiches.json OU DANS candidates.json
+        if sujet_cle in sujets_fiches:
+            print(f"ℹ️ Sauté (déjà publié dans fiches.json) : {item['sujet']}")
+            continue
+        if sujet_cle in sujets_candidates:
+            print(f"ℹ️ Sauté (déjà en attente dans candidates.json) : {item['sujet']}")
+            continue
+
+        print(f"🔍 Traitement du sujet : {item['sujet']}...")
+        fiche = recuperer_fiche_wikipedia(item)
+        if fiche:
+            nouvelles_candidates.append(fiche)
+            sujets_candidates.add(sujet_cle)
+            ajouts += 1
 
     if ajouts > 0:
         sauvegarder_json(CANDIDATES_FILE, nouvelles_candidates)
-        print(f"💾 {ajouts} nouvelle(s) fiche(s) ajoutée(s) à {CANDIDATES_FILE}.")
+        print(f"💾 {ajouts} nouvelle(s) candidate(s) ajoutée(s) dans {CANDIDATES_FILE}.\n")
     else:
-        print("✅ Aucune nouvelle candidate à ajouter.")
+        print("✅ Aucun nouveau sujet à traiter (tous déjà présents dans fiches.json ou candidates.json).\n")
 
 if __name__ == "__main__":
     main()
