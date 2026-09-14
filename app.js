@@ -3,14 +3,23 @@ let ficheActuelle = null;
 
 async function chargerFiches() {
   try {
-    const reponse = await fetch('data/fiches.json');
-    fiches = await reponse.json();
-    afficherFicheAleatoire();
+    const timestamp = new Date().getTime();
+    const reponse = await fetch(`data/fiches.json?v=${timestamp}`);
+    if (!reponse.ok) throw new Error('Erreur de chargement');
+    
+    const fiches = await reponse.json();
+    initialiserApp(fiches);
   } catch (erreur) {
-    document.getElementById('card-sujet').textContent = "Erreur de chargement";
-    document.getElementById('card-texte').textContent = "Impossible de récupérer les informations.";
+    console.error("Impossible de charger les fiches Nosey :", erreur);
   }
 }
+
+function initialiserApp(fiches) {
+  if (!fiches || fiches.length === 0) return;
+  // Logique d'affichage des cartes...
+}
+
+document.addEventListener('DOMContentLoaded', chargerFiches);
 
 function afficherFicheAleatoire() {
   if (!fiches || fiches.length === 0) return;

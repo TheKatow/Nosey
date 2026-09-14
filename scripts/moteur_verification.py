@@ -1,127 +1,158 @@
 import json
-import urllib.request
 import os
-from datetime import datetime
+import urllib.request
+import urllib.parse
 
-NTFY_CHANNEL = "Nosey"
-MOTS_INTERDITS = ["magique", "incroyable", "miraculeux", "jamais vu", "unique au monde"]
+CANDIDATES_FILE = 'data/candidates.json'
+FICHES_FILE = 'data/fiches.json'
+NTFY_TOPIC_URL = "https://ntfy.sh/nosey_app_alerts_78932"
 
-def envoyer_notification(message):
-    """Envoie une notification push instantanée via Ntfy."""
-    if not message.strip():
-        return
-    url = f"https://ntfy.sh/{NTFY_CHANNEL}"
+MOTS_INTERDITS = [
+    "récemment", "l'année dernière", "actuellement", 
+    "voir ci-dessous", "cliquez ici", "sponsorisé"
+]
+
+def envoyer_notification_ntfy(titre, message, priorite="default"):
+    """Envoie une notification synthétique via Ntfy.sh."""
     try:
         req = urllib.request.Request(
-            url, 
+            NTFY_TOPIC_URL,
             data=message.encode('utf-8'),
-            headers={"Title": "Culture Rare - Validation"}
+            headers={
+                "Title": titre.encode('utf-8'),
+                "Priority": priorite,
+                "Tags": "mag_right,robot"
+            },
+            method="POST"
         )
         with urllib.request.urlopen(req, timeout=5) as resp:
-            if resp.status == 200:
-                print("🔔 Notification envoyée !")
+            pass
     except Exception as e:
-        print(f"⚠️ Échec notification : {e}")
+        print(f"⚠️ Impossible d'envoyer la notification Ntfy : {e}")
 
-def verifier_url(url):
-    """Vérifie l'accessibilité HTTP de la source."""
+def charger_json(fichier):
+    if os.path.exists(fichier):
+        try:
+            with open(fichier, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return []
+    return []
+
+def sauvegarder_json(fichier, donnees):
+    with open(fichier, 'w', encoding='utf-8') as f:
+        json.dump(donnees, f, ensure_ascii=False, indent=2)
+
+def tester_url(url):
+    """Vérifie que l'URL source répond correctement avec un code HTTP 200."""
+    if not url or not url.startswith("http"):
+        return False
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'NoseyBot/1.0'})
         with urllib.request.urlopen(req, timeout=5) as resp:
             return resp.status == 200
     except Exception:
         return False
 
-def verifier_texte(texte):
-    """Vérifie la longueur (~50 mots) et l'absence de mots interdits."""
-    mots = texte.split()
-    nb_mots = len(mots)
-    if not (30 <= nb_mots <= 70):
-        return False, f"Longueur incorrecte ({nb_mots} mots)"
-    for mot in MOTS_INTERDITS:
-        if mot in texte.lower():
-            return False, f"Mot interdit '{mot}' présent"
-    return True, "OK"
+def verifier_et_nettoyer_fiches_publiees():
+    """Parade #3 : Vérifie l'accessibilité des sources dans fiches.json et retire les liens cassés."""
+    fiches = charger_json(FICHES_FILE)
+    if not fiches:
+        return 0
 
-def traiter_validation():
-    """Traite les candidates : déplace les VALIDE_100 vers fiches.json et alerte sur le reste."""
-    fiches_file = 'data/fiches.json'
-    candidates_file = 'data/candidates.json'
+    fiches_valides = []
+    liens_casses = 0
 
-    if not os.path.exists(candidates_file):
-        return
-
-    with open(candidates_file, 'r', encoding='utf-8') as f:
-        candidates = json.load(f)
-
-    if not os.path.exists(fiches_file):
-        fiches = []
-    else:
-        with open(fiches_file, 'r', encoding='utf-8') as f:
-            fiches = json.load(f)
-
-    nouvelles_validees = []
-    erreurs = []
-    candidates_restantes = []
-
-    for fiche in candidates:
-        sujet = fiche.get('sujet', 'Inconnu')
-
-        # Si tu as validé la fiche
-        if fiche.get('statut') == 'VALIDE_100':
-            # Tests de garde-fou automatisés
-            if not verifier_url(fiche.get('source_url', '')):
-                erreurs.append(f"Source URL HS pour '{sujet}'")
-                candidates_restantes.append(fiche)
-                continue
-
-            conforme, raison = verifier_texte(fiche.get('fait_texte', ''))
-            if not conforme:
-                erreurs.append(f"Texte non conforme pour '{sujet}' ({raison})")
-                candidates_restantes.append(fiche)
-                continue
-
-            # Ingestion définitive
-            fiche['date_validation'] = datetime.now().strftime('%Y-%m-%d')
-            fiches.append(fiche)
-            nouvelles_validees.append(sujet)
+    for fiche in fiches:
+        url = fiche.get('source_url', '')
+        if tester_url(url):
+            fiches_valides.append(fiche)
         else:
-            candidates_restantes.append(fiche)
+            liens_casses += 1
+            print(f"🗑️ Lien cassé détecté dans fiches.json : {fiche.get('sujet')} ({url})")
 
-    # Écriture des bases mise à jour
-    if nouvelles_validees:
-        with open(fiches_file, 'w', encoding='utf-8') as f:
-            json.dump(fiches, f, ensure_ascii=False, indent=2)
+    if liens_casses > 0:
+        sauvegarder_json(FICHES_FILE, fiches_valides)
+        print(f"🧹 Nettoyage terminé : {liens_casses} fiche(s) retirée(s) de fiches.json.")
 
-    with open(candidates_file, 'w', encoding='utf-8') as f:
-        json.dump(candidates_restantes, f, ensure_ascii=False, indent=2)
+    return liens_casses
 
-    # Récapitulatif unique envoyé sur ton téléphone
-    generer_et_envoyer_rapport(nouvelles_validees, erreurs, len(candidates_restantes))
+def valider_candidate(candidate):
+    """Contrôle la validité d'une candidate avant ingestion."""
+    sujet = candidate.get('sujet', '').strip()
+    fait = candidate.get('fait_texte', '').strip()
+    url = candidate.get('source_url', '').strip()
 
-def generer_et_envoyer_rapport(validees, erreurs, nb_en_attente):
-    if not validees and not erreurs and nb_en_attente == 0:
-        return
+    if not sujet or not fait or not url:
+        return False, "Champs requis manquants"
 
-    rapport = []
-    if erreurs:
-        rapport.append(f"🚨 {len(erreurs)} erreur(s) détectée(s) :")
-        for err in erreurs:
-            rapport.append(f"- {err}")
+    mots = fait.split()
+    if len(mots) < 25 or len(mots) > 80:
+        return False, f"Longueur de texte invalide ({len(mots)} mots)"
 
-    if validees:
-        if rapport:
-            rapport.append("")
-        rapport.append(f"✅ {len(validees)} fiche(s) intégrée(s) définitivement :")
-        for sujet in validees:
-            rapport.append(f"- {sujet}")
+    fait_lower = fait.lower()
+    for mot in MOTS_INTERDITS:
+        if mot in fait_lower:
+            return False, f"Mot interdit détecté : '{mot}'"
 
-    if nb_en_attente > 0:
-        if rapport:
-            rapport.append("")
-        rapport.append(f"⏳ {nb_en_attente} fiche(s) en attente de ta relecture dans candidates.json.")
+    if not tester_url(url):
+        return False, "URL source inaccessible (HTTP != 200)"
 
-    envoyer_notification("\n".join(rapport))
+    return True, "Valide"
+
+def traiter_candidates():
+    """Traite candidates.json, transfère les fiches validées vers fiches.json."""
+    candidates = charger_json(CANDIDATES_FILE)
+    fiches_existantes = charger_json(FICHES_FILE)
+
+    candidates_restantes = []
+    nouvelles_fiches = 0
+    rejets = 0
+
+    for candidate in candidates:
+        statut = candidate.get('statut', 'A_VERIFIER')
+        
+        # Si la candidate est marquée pour vérification
+        if statut == 'A_VERIFIER':
+            est_valide, raison = valider_candidate(candidate)
+            if est_valide:
+                candidate['statut'] = 'VALIDE'
+                fiches_existantes.append(candidate)
+                nouvelles_fiches += 1
+                print(f"✅ Fiche validée : {candidate.get('sujet')}")
+            else:
+                rejets += 1
+                print(f"❌ Candidate rejetée [{candidate.get('sujet')}] : {raison}")
+        else:
+            candidates_restantes.append(candidate)
+
+    if nouvelles_fiches > 0:
+        sauvegarder_json(FICHES_FILE, fiches_existantes)
+
+    sauvegarder_json(CANDIDATES_FILE, candidates_restantes)
+
+    return nouvelles_fiches, rejets, len(candidates_restantes)
+
+def main():
+    print("🔍 Démarrage du moteur de vérification Nosey...\n")
+
+    # 1. Purge des liens cassés sur les fiches déjà publiées (Parade #3)
+    liens_retires = verifier_et_nettoyer_fiches_publiees()
+
+    # 2. Validation et transfert des candidates
+    nouvelles, rejets, en_attente = traiter_candidates()
+
+    # 3. Rapport d'exécution synthétique pour Ntfy
+    message_ntfy = (
+        f"📊 Bilan Nosey :\n"
+        f"• Nouvelles fiches publiées : {nouvelles}\n"
+        f"• Candidates rejetées : {rejets}\n"
+        f"• En attente dans la file : {en_attente}\n"
+        f"• Liens cassés purges : {liens_retires}"
+    )
+
+    print(f"\n{message_ntfy}")
+    envoyer_notification_ntfy("Nosey — Bilan de vérification", message_ntfy)
 
 if __name__ == "__main__":
-    traiter_validation()
+    main()
