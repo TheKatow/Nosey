@@ -1,112 +1,82 @@
-// Clés utilisées dans le stockage local du navigateur
-const STORAGE_KEY_VUS = 'nosey_fiches_vues';
-const STORAGE_KEY_DERNIERE_DATE = 'nosey_derniere_date_lecture';
+// Clés de stockage LocalStorage
+const CLE_STOCKAGE_DATE = 'nosey_derniere_lecture_date';
+const CLE_STOCKAGE_FICHE = 'nosey_fiche_du_jour';
 
-let fichesInedites = [];
-let ficheDuJour = null;
+document.addEventListener('DOMContentLoaded', () => {
+  chargerFicheDuJour();
+});
 
-// -----------------------------------------------------------------------------
-// 1. Utilitaires Date & Stockage Local
-// -----------------------------------------------------------------------------
+/**
+ * Charge et affiche la fiche du jour
+ */
+async function chargerFicheDuJour() {
+  const aujourdhui = new Date().toISOString().split('T')[0];
+  const derniereLecture = localStorage.getItem(CLE_STOCKAGE_DATE);
 
-function obtenirDateAujourdhui() {
-  const aujourdhui = new Date();
-  const annee = aujourdhui.getFullYear();
-  const mois = String(aujourdhui.getMonth() + 1).padStart(2, '0');
-  const jour = String(aujourdhui.getDate()).padStart(2, '0');
-  return `${annee}-${mois}-${jour}`;
-}
-
-function aDejaLuAujourdhui() {
-  const derniereDate = localStorage.getItem(STORAGE_KEY_DERNIERE_DATE);
-  return derniereDate === obtenirDateAujourdhui();
-}
-
-function enregistrerLectureAujourdhui(ficheId) {
-  // 1. Enregistrer la date du jour
-  localStorage.setItem(STORAGE_KEY_DERNIERE_DATE, obtenirDateAujourdhui());
-
-  // 2. Ajouter l'ID aux fiches vues pour ne plus la recharger ultérieurement
-  const vues = obtenirFichesVues();
-  if (!vues.includes(ficheId)) {
-    vues.push(ficheId);
-    localStorage.setItem(STORAGE_KEY_VUS, JSON.stringify(vues));
+  // 1. Si l'utilisateur a déjà lu sa fiche aujourd'hui -> Écran "À demain"
+  if (derniereLecture === aujourdhui) {
+    afficherEcranDejaLu();
+    return;
   }
-}
 
-function obtenirFichesVues() {
-  const vues = localStorage.getItem(STORAGE_KEY_VUS);
-  return vues ? JSON.parse(vues) : [];
-}
-
-function filtrerFichesInedites(toutesLesFiches) {
-  const vues = obtenirFichesVues();
-  return toutesLesFiches.filter(fiche => !vues.includes(fiche.id));
-}
-
-// Optionnel : Réinitialiser pour les tests
-function reinitialiserHistorique() {
-  localStorage.removeItem(STORAGE_KEY_VUS);
-  localStorage.removeItem(STORAGE_KEY_DERNIERE_DATE);
-  chargerFiches();
-}
-
-// -----------------------------------------------------------------------------
-// 2. Chargement des données
-// -----------------------------------------------------------------------------
-
-async function chargerFiches() {
   try {
-    const timestamp = new Date().getTime();
-    const reponse = await fetch(`data/fiches.json?v=${timestamp}`);
-    
-    if (!reponse.ok) {
-      throw new Error(`Erreur HTTP: ${reponse.status}`);
-    }
+    const reponse = await fetch('data/fiches.json');
+    const fiches = await reponse.json();
 
-    const toutesLesFiches = await reponse.json();
-    fichesInedites = filtrerFichesInedites(toutesLesFiches);
-
-    // Si une fiche a déjà été lue aujourd'hui, on bloque l'affichage
-    if (aDejaLuAujourdhui()) {
-      afficherEcranDejaLu();
+    if (!fiches || fiches.length === 0) {
+      afficherErreur("Aucune curiosité disponible pour le moment.");
       return;
     }
 
-    // Sinon, on sélectionne la première fiche inédite disponible
-    if (fichesInedites.length > 0) {
-      ficheDuJour = fichesInedites[0];
-      afficherFiche(ficheDuJour);
+    // 2. Récupérer la fiche déjà tirée aujourd'hui ou en choisir une au hasard
+    let ficheDuJour = null;
+    const ficheSauvegardee = localStorage.getItem(CLE_STOCKAGE_FICHE);
+
+    if (ficheSauvegardee) {
+      ficheDuJour = JSON.parse(ficheSauvegardee);
     } else {
-      afficherEcranFinSujets();
+      // Tirage au sort aléatoire parmi l'ensemble des fiches
+      const indexAleatoire = Math.floor(Math.random() * fiches.length);
+      ficheDuJour = fiches[indexAleatoire];
+      
+      // Mémorisation de la fiche tirée pour la journée en cours
+      localStorage.setItem(CLE_STOCKAGE_FICHE, JSON.stringify(ficheDuJour));
     }
+
+    // 3. Affichage de la carte
+    afficherFiche(ficheDuJour);
+
   } catch (erreur) {
-    console.error("Erreur lors du chargement de la fiche Nosey :", erreur);
+    console.error("Erreur lors du chargement des fiches :", erreur);
     afficherErreur("Impossible de charger la curiosité du jour.");
   }
 }
 
-// -----------------------------------------------------------------------------
-// 3. Affichage & Actions
-// -----------------------------------------------------------------------------
-
+/**
+ * Génère le rendu HTML de la carte
+ */
 function afficherFiche(fiche) {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
 
+  const imageBackground = fiche.image_url 
+    ? `style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.85)), url('${fiche.image_url}'); color: white;"` 
+    : '';
+
   carteContainer.innerHTML = `
-    <article class="carte" data-domaine="${fiche.domaine}">
+    <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
-        <span class="badge-domaine">${fiche.domaine}</span>
+        <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
+        <span class="theme-label">${fiche.theme || ''}</span>
       </header>
 
       <div class="carte-corps">
-        <h2 class="titre-sujet">${fiche.sujet}</h2>
-        <p class="texte-fait">${fiche.fait_texte}</p>
+        <h2 class="titre-sujet">${fiche.sujet || ''}</h2>
+        <p class="texte-fait">${fiche.fait_texte || ''}</p>
       </div>
 
       <footer class="carte-footer">
-        <a href="${fiche.source_url}" target="_blank" rel="noopener noreferrer" class="lien-source">
+        <a href="${fiche.source_url || '#'}" target="_blank" rel="noopener noreferrer" class="lien-source">
           Source : ${fiche.source_nom || 'Wikipédia'} ↗
         </a>
 
@@ -123,14 +93,17 @@ function afficherFiche(fiche) {
   `;
 }
 
+/**
+ * Gère la réaction utilisateur, déclenche l'animation de sortie et enregistre la lecture
+ */
 function reagir(ficheId, typeReaction) {
   const carteElement = document.querySelector('.carte');
 
   if (carteElement) {
-    // 1. Ajouter la classe d'animation de sortie
+    // Déclenchement de l'animation CSS de sortie
     carteElement.classList.add('carte-sortie');
 
-    // 2. Attendre la fin de l'animation CSS (300 ms) avant de verrouiller la lecture
+    // Attente de la fin de l'animation (300 ms) avant le basculement d'écran
     setTimeout(() => {
       enregistrerLectureAujourdhui(ficheId);
       afficherEcranDejaLu();
@@ -141,57 +114,35 @@ function reagir(ficheId, typeReaction) {
   }
 }
 
+/**
+ * Enregistre la date de lecture du jour et nettoie le tirage temporaire
+ */
+function enregistrerLectureAujourdhui(ficheId) {
+  const aujourdhui = new Date().toISOString().split('T')[0];
+  localStorage.setItem(CLE_STOCKAGE_DATE, aujourdhui);
+  localStorage.removeItem(CLE_STOCKAGE_FICHE);
+}
+
+/**
+ * Affiche l'écran de fin « À demain »
+ */
 function afficherEcranDejaLu() {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
 
   carteContainer.innerHTML = `
     <div class="ecran-fin">
-      <div class="icon-fin">☀️</div>
-      <h2>À demain pour un nouveau fait !</h2>
-      <p>Vous avez déjà découvert votre curiosité du jour.</p>
-      <p class="sous-texte">Revenez demain pour une nouvelle anecdote vérifiée.</p>
+      <div class="icon-fin">🧐</div>
+      <h2>C'est tout pour aujourd'hui !</h2>
+      <p>Reviens demain pour découvrir une nouvelle curiosité.</p>
+      <p class="sous-texte">Nosey — Un fait vérifié par jour.</p>
     </div>
   `;
 }
 
-function afficherEcranFinSujets() {
-  const carteContainer = document.getElementById('carte-container');
-  if (!carteContainer) return;
-
-  const imageBackground = fiche.image_url 
-    ? `style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${fiche.image_url}'); color: white;"` 
-    : '';
-
-  carteContainer.innerHTML = `
-    <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine}" ${imageBackground}>
-      <header class="carte-header">
-        <span class="badge-domaine">${fiche.domaine}</span>
-      </header>
-
-      <div class="carte-corps">
-        <h2 class="titre-sujet">${fiche.sujet}</h2>
-        <p class="texte-fait">${fiche.fait_texte}</p>
-      </div>
-
-      <footer class="carte-footer">
-        <a href="${fiche.source_url}" target="_blank" rel="noopener noreferrer" class="lien-source">
-          Source : ${fiche.source_nom || 'Wikipédia'} ↗
-        </a>
-
-        <div class="actions-emojis">
-          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'passer')" title="Passer">
-            ${fiche.emojis?.passer || '🌧️'}
-          </button>
-          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'positif')" title="Intéressant">
-            ${fiche.emojis?.positif || '☀️'}
-          </button>
-        </div>
-      </footer>
-    </article>
-  `;
-}
-
+/**
+ * Affiche un message d'erreur
+ */
 function afficherErreur(message) {
   const carteContainer = document.getElementById('carte-container');
   if (!carteContainer) return;
@@ -203,14 +154,11 @@ function afficherErreur(message) {
   `;
 }
 
-// Initialisation au chargement du DOM
-document.addEventListener('DOMContentLoaded', chargerFiches);
-
-// Enregistrement du Service Worker pour la PWA
+// Enregistrement du Service Worker PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then((reg) => console.log('Service Worker enregistré avec succès :', reg.scope))
-      .catch((err) => console.error('Échec de l\'enregistrement du Service Worker :', err));
+      .then((reg) => console.log('Service Worker enregistré :', reg.scope))
+      .catch((err) => console.error('Échec enregistrement Service Worker :', err));
   });
 }

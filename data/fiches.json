@@ -423,5 +423,22 @@
     "source_url": "https://fr.wikipedia.org/wiki/Relation_diversit%C3%A9-fonctionnement_dans_les_%C3%A9cosyst%C3%A8mes",
     "statut": "VALIDE",
     "date_generation": "2026-09-14"
+  },
+  {
+    "id": "CUL_2026091416412691",
+    "domaine": "CULTURE",
+    "theme": "Tradition populaire",
+    "sujet": "Fastnacht souabe et alémanique",
+    "fait_texte": "Le fastnacht souabe et alémanique est le carnaval de la région du sud-ouest de l'Allemagne, du Vorarlberg en Autriche et de certaines parties du nord-est et du centre de la Suisse. Il est également appelé fasnad, fasnet, fasnacht ou fasent. Il se distingue du carnaval rhénan, mais ne s'est établi comme forme autonome que depuis...",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Narrenzunft_M%C3%BChlenbach_%2815.01.2017_-_4%29.jpg/330px-Narrenzunft_M%C3%BChlenbach_%2815.01.2017_-_4%29.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🎨",
+      "passer": "🌫️"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Fastnacht_souabe_et_al%C3%A9manique",
+    "statut": "VALIDE",
+    "date_generation": "2026-09-14"
   }
 ]
