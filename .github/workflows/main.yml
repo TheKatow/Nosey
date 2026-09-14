@@ -82,7 +82,7 @@ jobs:
             git push
           fi
 
-- name: Notification ntfy en cas d'échec
+      - name: Notification ntfy en cas d'échec
         if: failure()
         run: |
           curl \
