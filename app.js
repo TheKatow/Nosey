@@ -1,13 +1,26 @@
 // Clés de stockage LocalStorage
 const CLE_STOCKAGE_DATE = 'nosey_derniere_lecture_date';
 const CLE_STOCKAGE_FICHE = 'nosey_fiche_du_jour';
+const CLE_HISTORIQUE_VUS = 'nosey_fiches_vues_ids';
 
 document.addEventListener('DOMContentLoaded', () => {
   chargerFicheDuJour();
 });
 
 /**
- * Charge et affiche la fiche du jour
+ * Mélange un tableau de manière équitable (Algorithme Fisher-Yates)
+ */
+function melangerTableau(tableau) {
+  const arr = [...tableau];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * Charge et affiche la fiche du jour sans répétition
  */
 async function chargerFicheDuJour() {
   const aujourdhui = new Date().toISOString().split('T')[0];
@@ -28,22 +41,35 @@ async function chargerFicheDuJour() {
       return;
     }
 
-    // 2. Récupérer la fiche déjà tirée aujourd'hui ou en choisir une au hasard
+    // 2. Récupérer la fiche verrouillée pour la journée en cours
     let ficheDuJour = null;
     const ficheSauvegardee = localStorage.getItem(CLE_STOCKAGE_FICHE);
 
     if (ficheSauvegardee) {
       ficheDuJour = JSON.parse(ficheSauvegardee);
     } else {
-      // Tirage au sort aléatoire parmi l'ensemble des fiches
-      const indexAleatoire = Math.floor(Math.random() * fiches.length);
-      ficheDuJour = fiches[indexAleatoire];
-      
-      // Mémorisation de la fiche tirée pour la journée en cours
+      // 3. Récupérer l'historique des cartes déjà vues
+      let vuesIds = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
+
+      // Filtrer pour ne garder que les fiches non encore vues
+      let nonVues = fiches.filter(f => !vuesIds.includes(f.id || f.sujet));
+
+      // Si toutes les fiches ont été vues, réinitialiser le cycle
+      if (nonVues.length === 0) {
+        vuesIds = [];
+        localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
+        nonVues = fiches;
+      }
+
+      // 4. Mélanger les fiches disponibles et sélectionner la première
+      const fichesMelangees = melangerTableau(nonVues);
+      ficheDuJour = fichesMelangees[0];
+
+      // Mémoriser le tirage pour la journée
       localStorage.setItem(CLE_STOCKAGE_FICHE, JSON.stringify(ficheDuJour));
     }
 
-    // 3. Affichage de la carte
+    // 5. Affichage de la carte
     afficherFiche(ficheDuJour);
 
   } catch (erreur) {
@@ -81,10 +107,10 @@ function afficherFiche(fiche) {
         </a>
 
         <div class="actions-emojis">
-          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'passer')" title="Passer">
+          <button class="btn-emoji" onclick="reagir('${fiche.id || fiche.sujet}', 'passer')" title="Passer">
             ${fiche.emojis?.passer || '🌧️'}
           </button>
-          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'positif')" title="Intéressant">
+          <button class="btn-emoji" onclick="reagir('${fiche.id || fiche.sujet}', 'positif')" title="Intéressant">
             ${fiche.emojis?.positif || '☀️'}
           </button>
         </div>
@@ -100,10 +126,8 @@ function reagir(ficheId, typeReaction) {
   const carteElement = document.querySelector('.carte');
 
   if (carteElement) {
-    // Déclenchement de l'animation CSS de sortie
     carteElement.classList.add('carte-sortie');
 
-    // Attente de la fin de l'animation (300 ms) avant le basculement d'écran
     setTimeout(() => {
       enregistrerLectureAujourdhui(ficheId);
       afficherEcranDejaLu();
@@ -115,11 +139,27 @@ function reagir(ficheId, typeReaction) {
 }
 
 /**
- * Enregistre la date de lecture du jour et nettoie le tirage temporaire
+ * Enregistre la lecture, ajoute la fiche à l'historique et réinitialise la fiche temporaire
  */
 function enregistrerLectureAujourdhui(ficheId) {
   const aujourdhui = new Date().toISOString().split('T')[0];
+  
+  // Enregistrer la date de lecture
   localStorage.setItem(CLE_STOCKAGE_DATE, aujourdhui);
+
+  // Ajouter la fiche à l'historique des fiches vues
+  const ficheCourante = JSON.parse(localStorage.getItem(CLE_STOCKAGE_FICHE) || '{}');
+  const idAAjouter = ficheId || ficheCourante.id || ficheCourante.sujet;
+
+  if (idAAjouter) {
+    const vuesIds = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
+    if (!vuesIds.includes(idAAjouter)) {
+      vuesIds.push(idAAjouter);
+      localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
+    }
+  }
+
+  // Nettoyage du tirage temporaire
   localStorage.removeItem(CLE_STOCKAGE_FICHE);
 }
 
