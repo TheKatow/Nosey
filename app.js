@@ -1,77 +1,147 @@
-let fiches = [];
-let ficheActuelle = null;
+// Clé utilisée dans le stockage local du navigateur pour le suivi utilisateur
+const STORAGE_KEY_VUS = 'nosey_fiches_vues';
+
+let fichesInedites = [];
+let ficheActuelleIndex = 0;
+
+// -----------------------------------------------------------------------------
+// 1. Gestion du Stockage Local (Suivi Utilisateur)
+// -----------------------------------------------------------------------------
+
+function obtenirFichesVues() {
+  const vues = localStorage.getItem(STORAGE_KEY_VUS);
+  return vues ? JSON.parse(vues) : [];
+}
+
+function marquerCommeVue(ficheId) {
+  const vues = obtenirFichesVues();
+  if (!vues.includes(ficheId)) {
+    vues.push(ficheId);
+    localStorage.setItem(STORAGE_KEY_VUS, JSON.stringify(vues));
+  }
+}
+
+function filtrerFichesInedites(toutesLesFiches) {
+  const vues = obtenirFichesVues();
+  return toutesLesFiches.filter(fiche => !vues.includes(fiche.id));
+}
+
+// Optionnel : Réinitialiser l'historique si l'utilisateur souhaite tout revoir
+function reinitialiserHistorique() {
+  localStorage.removeItem(STORAGE_KEY_VUS);
+  chargerFiches();
+}
+
+// -----------------------------------------------------------------------------
+// 2. Chargement des données avec Anti-Cache (Parade #4)
+// -----------------------------------------------------------------------------
 
 async function chargerFiches() {
   try {
+    // Timestamp dynamique pour contourner le cache navigateur
     const timestamp = new Date().getTime();
     const reponse = await fetch(`data/fiches.json?v=${timestamp}`);
-    if (!reponse.ok) throw new Error('Erreur de chargement');
     
-    const fiches = await reponse.json();
-    initialiserApp(fiches);
+    if (!reponse.ok) {
+      throw new Error(`Erreur HTTP: ${reponse.status}`);
+    }
+
+    const toutesLesFiches = await reponse.json();
+    
+    // Filtrage pour ne garder que les fiches non lues par cet utilisateur
+    fichesInedites = filtrerFichesInedites(toutesLesFiches);
+    ficheActuelleIndex = 0;
+
+    afficherFiche();
   } catch (erreur) {
-    console.error("Impossible de charger les fiches Nosey :", erreur);
+    console.error("Erreur lors du chargement des fiches Nosey :", erreur);
+    afficherErreur("Impossible de charger les curiosités du jour.");
   }
 }
 
-function initialiserApp(fiches) {
-  if (!fiches || fiches.length === 0) return;
-  // Logique d'affichage des cartes...
-}
+// -----------------------------------------------------------------------------
+// 3. Affichage et Interactions
+// -----------------------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', chargerFiches);
+function afficherFiche() {
+  const carteContainer = document.getElementById('carte-container');
+  if (!carteContainer) return;
 
-function afficherFicheAleatoire() {
-  if (!fiches || fiches.length === 0) return;
-
-  // Filtrer les fiches masquées dans le stockage local
-  const masquees = JSON.parse(localStorage.getItem('fiches_masquees') || '[]');
-  const fichesDisponibles = fiches.filter(f => !masquees.includes(f.id));
-
-  if (fichesDisponibles.length === 0) {
-    document.getElementById('card-domaine').textContent = "FIN DE LA SÉLECTION";
-    document.getElementById('card-sujet').textContent = "Vous avez tout découvert !";
-    document.getElementById('card-texte').textContent = "Revenez bientôt pour de nouvelles connaissances rares.";
-    document.getElementById('card-source').style.display = "none";
-    document.getElementById('btn-positif').style.display = "none";
-    document.getElementById('btn-passer').style.display = "none";
+  // Si aucune fiche inédite n'est disponible
+  if (fichesInedites.length === 0 || ficheActuelleIndex >= fichesInedites.length) {
+    afficherEcranFin();
     return;
   }
 
-  const index = Math.floor(Math.random() * fichesDisponibles.length);
-  ficheActuelle = fichesDisponibles[index];
+  const fiche = fichesInedites[ficheActuelleIndex];
 
-  document.getElementById('card-domaine').textContent = ficheActuelle.domaine;
-  document.getElementById('card-sujet').textContent = ficheActuelle.sujet;
-  document.getElementById('card-texte').textContent = ficheActuelle.fait_texte;
-  
-  const sourceEl = document.getElementById('card-source');
-  sourceEl.textContent = `Source : ${ficheActuelle.source_nom}`;
-  sourceEl.href = ficheActuelle.source_url;
-  sourceEl.style.display = "inline";
+  // Injection du HTML de la carte avec émojis et badge domaine
+  carteContainer.innerHTML = `
+    <article class="carte" data-domaine="${fiche.domaine}">
+      <header class="carte-header">
+        <span class="badge-domaine">${fiche.domaine}</span>
+        <span class="theme-label">${fiche.theme || ''}</span>
+      </header>
 
-  const btnPositif = document.getElementById('btn-positif');
-  const btnPasser = document.getElementById('btn-passer');
+      <div class="carte-corps">
+        <h2 class="titre-sujet">${fiche.sujet}</h2>
+        <p class="texte-fait">${fiche.fait_texte}</p>
+      </div>
 
-  btnPositif.textContent = ficheActuelle.emojis.positif;
-  btnPasser.textContent = ficheActuelle.emojis.passer;
+      <footer class="carte-footer">
+        <a href="${fiche.source_url}" target="_blank" rel="noopener noreferrer" class="lien-source">
+          Source : ${fiche.source_nom || 'Wikipédia'} ↗
+        </a>
 
-  btnPositif.onclick = () => enregistrerAction('LIKE');
-  btnPasser.onclick = () => enregistrerAction('HIDE');
+        <div class="actions-emojis">
+          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'passer')" title="Passer">
+            ${fiche.emojis?.passer || '🌧️'}
+          </button>
+          <button class="btn-emoji" onclick="reagir('${fiche.id}', 'positif')" title="Intéressant">
+            ${fiche.emojis?.positif || '☀️'}
+          </button>
+        </div>
+      </footer>
+    </article>
+  `;
 }
 
-function enregistrerAction(action) {
-  if (!ficheActuelle) return;
+function reagir(ficheId, typeReaction) {
+  // 1. Enregistrer la fiche comme vue dans le localStorage
+  marquerCommeVue(ficheId);
 
-  if (action === 'HIDE') {
-    const masquees = JSON.parse(localStorage.getItem('fiches_masquees') || '[]');
-    masquees.push(ficheActuelle.id);
-    localStorage.setItem('fiches_masquees', JSON.stringify(masquees));
-  }
-
-  // Passer à l'information suivante
-  afficherFicheAleatoire();
+  // 2. Passer à la fiche suivante dans la file
+  ficheActuelleIndex++;
+  afficherFiche();
 }
 
-// Initialisation au chargement de la page
+function afficherEcranFin() {
+  const carteContainer = document.getElementById('carte-container');
+  if (!carteContainer) return;
+
+  carteContainer.innerHTML = `
+    <div class="ecran-fin">
+      <div class="icon-fin">✨</div>
+      <h2>Vous êtes à jour !</h2>
+      <p>Vous avez consulté toutes les curiosités disponibles pour le moment.</p>
+      <p class="sous-texte">De nouvelles fiches seront ajoutées lors de la prochaine mise à jour quotidienne.</p>
+      <button class="btn-reset" onclick="reinitialiserHistorique()">
+        Revoir les anciennes fiches
+      </button>
+    </div>
+  `;
+}
+
+function afficherErreur(message) {
+  const carteContainer = document.getElementById('carte-container');
+  if (!carteContainer) return;
+
+  carteContainer.innerHTML = `
+    <div class="ecran-erreur">
+      <p>⚠️ ${message}</p>
+    </div>
+  `;
+}
+
+// Initialisation au chargement du DOM
 document.addEventListener('DOMContentLoaded', chargerFiches);

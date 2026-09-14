@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "id": "NAT_2026091413033633",
+    "domaine": "NATURE",
+    "theme": "Arbre remarquable",
+    "sujet": "Liste des arbres les plus anciens",
+    "fait_texte": "Cet article recense les arbres les plus anciens connus, dont l'âge est confirmé par des sources fiables. Il existe plusieurs définitions de ce qui constitue un arbre individuel. De plus, l'âge des arbres peut être estimé de différentes façons. Ces méthodes comprennent le prélèvement de carottes pour dénombrer les cernes. Pour ces raisons, l'article présente...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Liste_des_arbres_les_plus_anciens",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "NAT_2026091413033812",
+    "domaine": "NATURE",
+    "theme": "Arbre remarquable",
+    "sujet": "Liste d'arbres remarquables",
+    "fait_texte": "Cette liste est destinée à accueillir les arbres remarquables soit parce qu’ils battent des records de dimensions ou d’âge, soit parce qu’ils présentent des caractéristiques particulières et rares, soit parce qu’ils présentent un intérêt historique.",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🌿",
+      "passer": "🍂"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Liste_d'arbres_remarquables",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413040344",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Constitution physique",
+    "fait_texte": "La constitution physique est l'état du corps humain inné par opposition à la condition physique acquise, par exemple par le sport. On emploie également les termes « constitution corporelle » ou « constitution du corps ».",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Constitution_physique",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  },
+  {
+    "id": "SCI_2026091413040316",
+    "domaine": "SCIENCES",
+    "theme": "Anatomie humaine",
+    "sujet": "Ligne médio-claviculaire",
+    "fait_texte": "Une ligne anatomique est une ligne conventionnelle tracée, souvent par imagination et pour des usages liés à la santé, sur la base de points et emplacements anatomiques. Elle peut ainsi guider certains gestes de nature thérapeutique à la manière d'un repérage. Une ligne anatomique suppose un compromis entre l'anatomie caractéristique d'une espèce donnée et la...",
+    "localisation": "Monde",
+    "emojis": {
+      "positif": "🔬",
+      "passer": "💨"
+    },
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ligne_anatomique",
+    "statut": "A_VERIFIER",
+    "date_generation": "2026-09-14"
+  }
+]
