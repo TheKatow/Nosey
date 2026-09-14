@@ -87,12 +87,6 @@ body {
 .carte[data-domaine="CULTURE"] .badge-domaine { background-color: #fce7f3; color: #9d174d; }
 .carte[data-domaine="INGENIERIE"] .badge-domaine { background-color: #ede9fe; color: #5b21b6; }
 
-.theme-label {
-  color: var(--text-secondary);
-  font-weight: 400;
-  text-transform: capitalize;
-}
-
 /* --- CONTENU --- */
 .titre-sujet {
   font-size: 1.4rem;
@@ -212,8 +206,7 @@ body {
 
 .carte.avec-image .titre-sujet,
 .carte.avec-image .texte-fait,
-.carte.avec-image .lien-source,
-.carte.avec-image .theme-label {
+.carte.avec-image .lien-source {
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }

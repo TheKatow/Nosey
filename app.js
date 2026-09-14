@@ -98,7 +98,6 @@ function afficherFiche(fiche) {
     <article class="carte" data-domaine="${fiche.domaine}">
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine}</span>
-        <span class="theme-label">${fiche.theme || ''}</span>
       </header>
 
       <div class="carte-corps">
@@ -156,7 +155,6 @@ function afficherEcranFinSujets() {
     <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine}</span>
-        <span class="theme-label">${fiche.theme || ''}</span>
       </header>
 
       <div class="carte-corps">
