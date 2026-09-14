@@ -4,7 +4,9 @@ const STATIC_ASSETS = [
   './index.html',
   './style.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 // Installation du Service Worker et mise en cache du shell statique
