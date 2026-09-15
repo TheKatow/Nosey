@@ -186,5 +186,30 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
+  },
+  {
+    "id": "Q1810082",
+    "sujet": "Le Point",
+    "domaine": "SCIENCES",
+    "theme": "Découverte SCIENCES",
+    "fait_texte": "Le Point est un magazine d'actualité hebdomadaire français, créé en 1972 par une équipe de journalistes venant essentiellement de L'Express et proches d'Olivier Chevrillon et de Claude Imbert.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Le_Point",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Le_Point"
+      },
+      {
+        "nom": "CNRS",
+        "url": "https://www.iledefrance-gif.cnrs.fr/fr/cnrsinfo/palmares-2025-des-inventeurs-du-point-plusieurs-laureats-issus-de-laboratoires-cnrs-paris",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "image_url": "",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]

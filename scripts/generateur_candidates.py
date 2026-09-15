@@ -32,6 +32,13 @@ MOTS_CLES_VALEUR = [
     'exploit', 'découvert', 'inhabituel', 'exceptionnel'
 ]
 
+MOTS_CLES_RECORD = [
+    'record', 'meilleur', 'champion', 'classement', 'performance',
+    'plus grand', 'plus haut', 'plus long', 'plus rapide', 'premier',
+    'victoire', 'médaille', 'titre mondial', 'fois', 'km', 'kilomètre',
+    'mètre', 'seconde', 'minute', 'heure', '%'
+]
+
 class ResultatsRechercheParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -179,6 +186,28 @@ def rendre_fait_captivant(extract_texte):
         fait_final += '.'
 
     return fait_final
+
+def fait_remarquable(fait_texte, domaine):
+    texte = normaliser_sujet(fait_texte)
+    if not texte:
+        return False
+
+    phrases_generiques = (
+        'est une espece de',
+        'est une plante de',
+        'est un genre de',
+        'est une famille de',
+        'est un ensemble de',
+        'designe une',
+        'fait partie de'
+    )
+    if any(texte.startswith(phrase) for phrase in phrases_generiques):
+        return False
+
+    if domaine.lower() == 'records':
+        return any(mot in texte for mot in MOTS_CLES_RECORD)
+
+    return any(mot in texte for mot in MOTS_CLES_VALEUR) or bool(re.search(r'\d', texte))
 
 def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
     mots_fait = {mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)}
@@ -338,6 +367,9 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                 if not fait_texte:
                     logger.info("Article ignoré : aucun fait exploitable pour '%s'.", titre)
                     continue
+                if not fait_remarquable(fait_texte, domaine):
+                    logger.info("Article ignoré : fait trop générique ou non remarquable pour '%s'.", titre)
+                    continue
 
                 source_secondaire = chercher_source_secondaire(titre, fait_texte, sources_fiables)
                 if source_secondaire:
@@ -449,19 +481,24 @@ def main():
             erreur, sujet_recherche
         )
         return
-    historique_recherches.append({
-        'categorie': nom_categorie,
-        'sujet': sujet_recherche
-    })
-    sauvegarder_json(RECHERCHES_FILE, historique_recherches)
-    logger.info("Historique sauvegardé dans %s.", RECHERCHES_FILE)
     if fiche:
+        historique_recherches.append({
+            'categorie': nom_categorie,
+            'sujet': sujet_recherche
+        })
+        sauvegarder_json(RECHERCHES_FILE, historique_recherches)
+        logger.info("Historique sauvegardé dans %s.", RECHERCHES_FILE)
         sujet = normaliser_sujet(fiche['sujet'])
         if sujet not in sujets_fiches and sujet not in sujets_candidates:
             logger.info("Curiosité confirmée : %s.", fiche['sujet'])
             nouvelles_candidates.append(fiche)
             sujets_candidates.add(sujet)
             ajouts += 1
+    else:
+        logger.info(
+            "Aucun article valable pour '%s' : sujet conservé pour une prochaine exécution.",
+            sujet_recherche
+        )
 
     if ajouts > 0:
         sauvegarder_json(CANDIDATES_FILE, nouvelles_candidates)
