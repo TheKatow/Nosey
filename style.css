@@ -266,3 +266,18 @@ body {
     transform: translateY(-24px) scale(0.95);
   }
 }
+
+@media (min-width: 768px) {
+  #carte-container {
+    max-width: 760px;
+  }
+
+  .navigation-fiche {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .carte {
+    min-height: min(720px, calc(100vh - 48px));
+  }
+}
