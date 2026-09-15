@@ -9,16 +9,6 @@ CANDIDATES_FILE = 'data/candidates.json'
 BLACKLIST_FILE = 'data/blacklist.json'
 FICHES_FILE = 'data/fiches.json'
 
-THEMES_INITIALS = [
-    {"sujet": "Phryctorie", "domaine": "HISTOIRE", "theme": "Grèce antique"},
-    {"sujet": "Effet Mpemba", "domaine": "SCIENCES", "theme": "Physique"},
-    {"sujet": "Mécanisme d'Anticythère", "domaine": "INGÉNIERIE", "theme": "Archéologie technologique"},
-    {"sujet": "Végétalisme", "domaine": "NATURE", "theme": "Environnement"},
-    {"sujet": "Symphonie nº 45 de Haydn", "domaine": "CULTURE", "theme": "Musique classique"},
-    {"sujet": "Tour de transmission de Kharkiv", "domaine": "INGÉNIERIE", "theme": "Architecture"},
-    {"sujet": "Lac Hillier", "domaine": "NATURE", "theme": "Géographie"}
-]
-
 MOTS_CLES_VALEUR = [
     'plus long', 'plus grand', 'plus haut', 'plus profond', 'plus ancien', 
     'premi', 'unique', 'record', 'seul', 'particularité', 'prouesse', 
@@ -157,28 +147,7 @@ def main():
     nouvelles_candidates = list(candidates_existantes)
     ajouts = 0
 
-    # 1. Traitement des thèmes de la liste fixe s'ils sont inédits
-    for item in THEMES_INITIALS:
-        sujet_cle = item['sujet'].strip().lower()
-        if sujet_cle in sujets_fiches or sujet_cle in sujets_candidates:
-            continue
-
-        print(f"🔍 Traitement du sujet : {item['sujet']}...")
-        titre_encode = urllib.parse.quote(item['sujet'].replace(" ", "_"))
-        url_api = f"https://fr.wikipedia.org/api/rest_v1/page/summary/{titre_encode}"
-        try:
-            req = urllib.request.Request(url_api, headers={'User-Agent': 'NoseyBot/1.0'})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                data = json.loads(resp.read().decode('utf-8'))
-                fiche = structurer_fiche(data, domaine=item.get('domaine'), theme=item.get('theme'))
-                if fiche:
-                    nouvelles_candidates.append(fiche)
-                    sujets_candidates.add(sujet_cle)
-                    ajouts += 1
-        except Exception as e:
-            print(f"⚠️ Erreur sur '{item['sujet']}' : {e}")
-
-    # 2. Recherche ciblée d'exploits d'ingénierie
+    # 1. Recherche ciblée d'exploits d'ingénierie
     recherches_ingenerie = [
         "plus long pont d'Europe", "plus grand pont du monde", "prouesse architecturale",
         "tunnel le plus long", "record ingénierie", "structure la plus haute du monde", "machine la plus grande"
@@ -193,7 +162,7 @@ def main():
             sujets_candidates.add(sujet_ing)
             ajouts += 1
 
-    # 3. Recherche ciblée sur un fait scientifique étonnant
+    # 2. Recherche ciblée sur un fait scientifique étonnant
     recherches_sciences = [
         "découverte scientifique insolite", "phénomène physique unique", "adaptation animale exceptionnelle",
         "organisme le plus ancien", "record biologique"
