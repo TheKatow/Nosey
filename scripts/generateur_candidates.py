@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import re
@@ -55,6 +56,41 @@ class ResultatsRechercheParser(HTMLParser):
             if self.resultats:
                 self.resultats[-1]['extrait'] = ' '.join(self.texte_courant).strip()
             self.est_extrait = False
+
+class ResultatsBingParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.resultats = []
+        self.resultat_courant = None
+        self.champ_courant = None
+        self.texte_courant = []
+
+    def handle_starttag(self, tag, attrs):
+        attributs = dict(attrs)
+        classes = attributs.get('class', '').split()
+        if tag == 'li' and 'b_algo' in classes:
+            self.resultat_courant = {'url': '', 'titre': '', 'extrait': ''}
+        elif self.resultat_courant is not None and tag == 'a' and not self.resultat_courant['url']:
+            self.resultat_courant['url'] = attributs.get('href', '')
+            self.champ_courant = 'titre'
+            self.texte_courant = []
+        elif self.resultat_courant is not None and tag == 'p':
+            self.champ_courant = 'extrait'
+            self.texte_courant = []
+
+    def handle_data(self, data):
+        if self.champ_courant:
+            self.texte_courant.append(data)
+
+    def handle_endtag(self, tag):
+        if tag in ('a', 'p') and self.champ_courant:
+            self.resultat_courant[self.champ_courant] = ' '.join(self.texte_courant).strip()
+            self.champ_courant = None
+            self.texte_courant = []
+        elif tag == 'li' and self.resultat_courant is not None:
+            if self.resultat_courant['url']:
+                self.resultats.append(self.resultat_courant)
+            self.resultat_courant = None
             self.texte_courant = []
 
 def charger_json(fichier):
@@ -134,39 +170,39 @@ def rendre_fait_captivant(extract_texte):
     return fait_final
 
 def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
-    requete = urllib.parse.quote(f'"{sujet}"')
-    url_recherche = f'https://html.duckduckgo.com/html/?q={requete}'
+    mots_fait = {mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)}
 
     try:
-        req = urllib.request.Request(url_recherche, headers={'User-Agent': 'NoseyBot/1.0'})
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            parser = ResultatsRechercheParser()
-            parser.feed(resp.read().decode('utf-8', errors='replace'))
-
-        mots_fait = {
-            mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)
-        }
-        for resultat in parser.resultats:
-            url = resultat['url']
-            parametres = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
-            url = parametres.get('uddg', [url])[0]
-            source_trouvee = next(
-                (
-                    source for source in sources_fiables
-                    if any(domaine in url for domaine in source.get('domaines', []))
-                ),
-                None
-            )
-            if not source_trouvee:
+        for source in sources_fiables:
+            domaines = source.get('domaines', [])
+            if not domaines:
                 continue
-            texte_source = f"{resultat['titre']} {resultat['extrait']}".lower()
-            mots_source = set(re.findall(r"[A-Za-zÀ-ÿ]{5,}", texte_source))
-            if len(mots_fait.intersection(mots_source)) >= 2:
-                return {
-                    'nom': source_trouvee.get('nom', 'Source fiable'),
-                    'url': url,
-                    'extrait': resultat['extrait']
-                }
+            requete = urllib.parse.quote(f'"{sujet}" site:{domaines[0]}')
+            url_recherche = f'https://www.bing.com/search?q={requete}'
+            req = urllib.request.Request(url_recherche, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                parser = ResultatsBingParser()
+                parser.feed(resp.read().decode('utf-8', errors='replace'))
+
+            for resultat in parser.resultats:
+                url = resultat['url']
+                parametres = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+                lien_encode = parametres.get('u', [''])[0]
+                if lien_encode.startswith('a1'):
+                    try:
+                        url = base64.urlsafe_b64decode(lien_encode[2:] + '===').decode('utf-8')
+                    except (ValueError, UnicodeDecodeError):
+                        continue
+                if not any(domaine in url for domaine in domaines):
+                    continue
+                texte_source = f"{resultat['titre']} {resultat['extrait']}".lower()
+                mots_source = set(re.findall(r"[A-Za-zÀ-ÿ]{5,}", texte_source))
+                if len(mots_fait.intersection(mots_source)) >= 2:
+                    return {
+                        'nom': source.get('nom', 'Source fiable'),
+                        'url': url,
+                        'extrait': resultat['extrait']
+                    }
     except Exception as erreur:
         print(f"⚠️ Recherche de source secondaire impossible pour '{sujet}' : {erreur}")
 
