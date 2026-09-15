@@ -97,33 +97,5 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
-  },
-  {
-    "id": "Q3253336",
-    "sujet": "Liste des ponts les plus longs de France",
-    "domaine": "INGÉNIERIE",
-    "theme": "Prouesse technique",
-    "fait_texte": "Cette liste des ponts les plus longs de France présente une liste de ponts de France possédant une portée supérieure à 100 mètres ou une longueur totale supérieure à 500 mètres.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Liste_des_ponts_les_plus_longs_de_France",
-    "image_url": "",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
-  },
-  {
-    "id": "Q3537892",
-    "sujet": "Organismes vivants les plus petits",
-    "domaine": "SCIENCES",
-    "theme": "Découverte",
-    "fait_texte": "Les organismes vivants les plus petits présents sur Terre peuvent être déterminés en fonction de divers critères de taille de l'organisme, par exemple le volume, la masse, la hauteur, la longueur, ou la taille du génome.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Organismes_vivants_les_plus_petits",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ca/Bee_hummingbird_%28Mellisuga_helenae%29_adult_male_in_flight.jpg/330px-Bee_hummingbird_%28Mellisuga_helenae%29_adult_male_in_flight.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
   }
 ]
