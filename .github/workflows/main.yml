@@ -67,12 +67,16 @@ jobs:
               exit(1)
           EOF
 
+      - name: Réinitialiser la blacklist après traitement
+        if: success()
+        run: printf '[]\n' > data/blacklist.json
+
       - name: Commit et Push des modifications si succès
         if: success()
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/candidates.json data/fiches.json
+          git add data/candidates.json data/fiches.json data/blacklist.json
           
           if git diff --staged --quiet; then
             echo "Aucune modification à commiter."
