@@ -16,7 +16,7 @@
   },
   {
     "categorie": "HISTOIRE",
-    "domaine": "HISTOIRE",
+    "domaine": "historique",
     "categorie_wikipedia": "Histoire"
   },
   {
@@ -31,7 +31,7 @@
     },
     {
         "categorie": "SPORT",
-        "domaine": "SPORT",
+        "domaine": "records",
         "categorie_wikipedia": "Sport"
     },
     {

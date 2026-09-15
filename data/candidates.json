@@ -1,1 +1,52 @@
-[]
+[
+  {
+    "id": "Q39201",
+    "sujet": "Animal de compagnie",
+    "domaine": "ANIMAL",
+    "theme": "Découverte ANIMAL",
+    "fait_texte": "Un animal de compagnie est un animal recevant la protection de l'espèce humaine en échange de sa présence, de sa beauté, de sa jovialité ou encore pour ses talents.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Animal_de_compagnie",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Animal_de_compagnie"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/animal/pet",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Alfred-stevens-will-you-go-out-with-me-fido-1859.jpg/330px-Alfred-stevens-will-you-go-out-with-me-fido-1859.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q187097",
+    "sujet": "Géographie économique",
+    "domaine": "GÉOGRAPHIE",
+    "theme": "Découverte NATURE",
+    "fait_texte": "La géographie économique est la branche de la géographie humaine qui étudie la répartition spatiale et la localisation des activités économiques.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/G%C3%A9ographie_%C3%A9conomique",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/G%C3%A9ographie_%C3%A9conomique"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/topic/economic-geography",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "image_url": "",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  }
+]

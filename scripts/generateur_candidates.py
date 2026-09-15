@@ -315,21 +315,38 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                 logger.warning("Aucun résultat Wikipédia pour '%s'.", requete)
                 return None
             
-            choix = random.choice(resultats[:5])
-            titre = choix['title']
-            logger.info("Article Wikipédia sélectionné : '%s'.", titre)
-            titre_encode = urllib.parse.quote(titre.replace(" ", "_"))
-            url_summary = f"https://fr.wikipedia.org/api/rest_v1/page/summary/{titre_encode}"
-            
-            req_sum = urllib.request.Request(url_summary, headers={'User-Agent': 'NoseyBot/1.0'})
-            with urllib.request.urlopen(req_sum, timeout=5) as resp_sum:
-                data_summary = json.loads(resp_sum.read().decode('utf-8'))
+            resultats_a_tester = resultats[:5].copy()
+            random.shuffle(resultats_a_tester)
+            for choix in resultats_a_tester:
+                titre = choix['title']
+                logger.info("Article Wikipédia testé : '%s'.", titre)
+                titre_encode = urllib.parse.quote(titre.replace(" ", "_"))
+                url_summary = f"https://fr.wikipedia.org/api/rest_v1/page/summary/{titre_encode}"
+
+                req_sum = urllib.request.Request(url_summary, headers={'User-Agent': 'NoseyBot/1.0'})
+                try:
+                    with urllib.request.urlopen(req_sum, timeout=5) as resp_sum:
+                        data_summary = json.loads(resp_sum.read().decode('utf-8'))
+                except urllib.error.HTTPError as erreur:
+                    if erreur.code == 429:
+                        raise LimitationReseau(f"Wikipédia limite le résumé de '{titre}'") from erreur
+                    logger.warning("Résumé Wikipédia inaccessible pour '%s' : %s", titre, erreur)
+                    continue
+
                 fait_texte = rendre_fait_captivant(data_summary.get('extract', ''))
                 logger.info("Résumé reçu pour '%s' : %d caractères de fait exploitable.", titre, len(fait_texte))
+                if not fait_texte:
+                    logger.info("Article ignoré : aucun fait exploitable pour '%s'.", titre)
+                    continue
+
                 source_secondaire = chercher_source_secondaire(titre, fait_texte, sources_fiables)
-                if not source_secondaire:
-                    return None
-                return structurer_fiche(data_summary, source_secondaire, domaine=domaine, theme=theme)
+                if source_secondaire:
+                    logger.info("Article retenu : '%s'.", titre)
+                    return structurer_fiche(data_summary, source_secondaire, domaine=domaine, theme=theme)
+                logger.info("Article écarté : aucune seconde source pour '%s'.", titre)
+
+            logger.warning("Aucun des %d articles testés ne possède de seconde source fiable.", len(resultats_a_tester))
+            return None
     except urllib.error.HTTPError as erreur:
         if erreur.code == 429:
             raise LimitationReseau(f"Wikipédia limite la recherche de '{requete}'") from erreur
