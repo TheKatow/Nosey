@@ -97,5 +97,19 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
+  },
+  {
+    "id": "Q1144457",
+    "sujet": "Physique quantique",
+    "domaine": "SCIENCES",
+    "theme": "Découverte",
+    "fait_texte": "La physique quantique est un ensemble de théories physiques nées au XXe siècle, qui décrivent le comportement des atomes et des particules et permettent d'élucider certaines propriétés du rayonnement électromagnétique.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Physique_quantique",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Hi%C3%A9rarchie_des_syst%C3%A8mes_physiques.png/330px-Hi%C3%A9rarchie_des_syst%C3%A8mes_physiques.png?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]
