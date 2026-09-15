@@ -1,10 +1,17 @@
 import json
 import os
+import re
 import urllib.request
 
 CANDIDATES_FILE = 'data/candidates.json'
 BLACKLIST_FILE = 'data/blacklist.json'
 FICHES_FILE = 'data/fiches.json'
+
+MOTS_VALEUR_EXPLICITE = [
+    'record', 'plus grand', 'plus haut', 'plus long', 'plus profond',
+    'premier', 'unique', 'monumental', 'exceptionnel', 'seul',
+    'prouesse', 'exploit', 'particulier', 'pionnier'
+]
 
 def charger_json(fichier):
     if os.path.exists(fichier):
@@ -61,18 +68,24 @@ def verifier_url(url):
     except Exception:
         return False
 
-def verifier_impact_ingenerie(fiche):
-    """Exige des notions de grandeur ou d'exploit si la fiche est classée en ingénierie."""
-    if fiche.get('domaine') != 'INGÉNIERIE':
-        return True
-
-    mots_impact = [
-        'record', 'plus grand', 'plus haut', 'plus long', 'premier',
-        'tonne', 'mètre', 'km', 'milliards', 'prouesse', 'unique',
-        'monumental', 'géant', 'exceptionnel'
-    ]
+def verifier_valeur_ajoutee_et_contexte(fiche):
+    """Refuse les fiches chiffrées (ex: 12 km) dépourvues de superlatifs ou de contexte remarquable."""
     texte = fiche.get('fait_texte', '').lower()
-    return any(mot in texte for mot in mots_impact)
+    
+    # Exigence spécifique pour l'ingénierie
+    if fiche.get('domaine') == 'INGÉNIERIE':
+        mots_impact = MOTS_VALEUR_EXPLICITE + ['tonne', 'mètre', 'km', 'milliards', 'géant']
+        if not any(mot in texte for mot in mots_impact):
+            return False, "Ingénierie sans chiffre ni fait marquant"
+
+    # Vérification anti-banalité globale : présence d'une donnée chiffrée
+    contient_mesure = bool(re.search(r'\d+\s*(km|m|mètres|kilomètres|ans|siècles|tonnes|kilos)', texte))
+    contient_qualification = any(mot in texte for mot in MOTS_VALEUR_EXPLICITE)
+
+    if contient_mesure and not contient_qualification:
+        return False, "Donnée chiffrée présente mais contexte/record non précisé"
+
+    return True, "OK"
 
 def valider_fiche(fiche):
     texte = fiche.get('fait_texte', '').strip()
@@ -89,11 +102,12 @@ def valider_fiche(fiche):
     if not texte.endswith(('.', '!', '?')):
         return False, "Absence de ponctuation finale"
 
-    if not verifier_impact_ingenerie(fiche):
-        return False, "Ingénierie sans fait marquant ou grandeur"
+    valide_contexte, raison_contexte = verifier_valeur_ajoutee_et_contexte(fiche)
+    if not valide_contexte:
+        return False, raison_contexte
 
     if not verifier_url(fiche.get('source_url')):
-        return False, "Lien source inacessible"
+        return False, "Lien source inaccessible"
 
     return True, "Valide"
 
@@ -130,7 +144,7 @@ def main():
         else:
             print(f"❌ Rejetée ({candidate.get('sujet')}) : {raison}")
 
-    # Reset du fichier candidates après traitement
+    # Nettoyage de la liste candidates après traitement
     sauvegarder_json(CANDIDATES_FILE, candidates_restantes)
     
     if nouveaux_ajouts > 0 or fiches_retirees > 0:

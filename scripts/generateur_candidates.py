@@ -19,6 +19,12 @@ THEMES_INITIALS = [
     {"sujet": "Lac Hillier", "domaine": "NATURE", "theme": "Géographie"}
 ]
 
+MOTS_CLES_VALEUR = [
+    'plus long', 'plus grand', 'plus haut', 'plus profond', 'plus ancien', 
+    'premi', 'unique', 'record', 'seul', 'particularité', 'prouesse', 
+    'exploit', 'découvert', 'inhabituel', 'exceptionnel'
+]
+
 def charger_json(fichier):
     if os.path.exists(fichier):
         try:
@@ -45,6 +51,7 @@ def rendre_fait_captivant(extract_texte):
     if not extract_texte:
         return ""
 
+    # Nettoyage des parenthèses, crochets et espaces
     texte = re.sub(r'\([^)]*\)', '', extract_texte)
     texte = re.sub(r'\[[^\]]*\]', '', texte)
     texte = re.sub(r'\s+', ' ', texte).strip()
@@ -55,18 +62,32 @@ def rendre_fait_captivant(extract_texte):
 
     phrase_principale = phrases[0]
     phrase_anecdote = ""
-    mots_cles = ['premi', 'plus', 'unique', 'permet', 'utilis', 'grâce', 'découvert', 'record', 'km', 'siècle', 'particulier']
 
+    # Recherche d'une phrase porteuse du contexte/record remarquable
     for p in phrases[1:4]:
-        if any(mot in p.lower() for mot in mots_cles):
+        if any(mot in p.lower() for mot in MOTS_CLES_VALEUR):
             phrase_anecdote = p
             break
 
+    # Assemblage
     if phrase_anecdote and len(phrase_principale + " " + phrase_anecdote) <= 280:
         fait_final = f"{phrase_principale} {phrase_anecdote}"
     else:
         fait_final = phrase_principale
 
+    # Vérification anti-fait banal : si la fiche contient une donnée chiffrée (ex: "12 km")
+    # mais aucun superlatif/contexte d'exception, on tente de forcer l'ajout d'une phrase qualificative.
+    contient_chiffre = bool(re.search(r'\d+\s*(km|m|mètres|kilomètres|ans|siècles)', fait_final, re.IGNORECASE))
+    contient_valeur = any(mot in fait_final.lower() for mot in MOTS_CLES_VALEUR)
+
+    if contient_chiffre and not contient_valeur:
+        # Essayer de trouver une phrase de contexte dans la suite de l'extrait
+        for p in phrases[1:5]:
+            if any(m in p.lower() for m in MOTS_CLES_VALEUR):
+                fait_final = f"{phrase_principale} {p}"
+                break
+
+    # Tronquage propre à 280 caractères
     if len(fait_final) > 280:
         fait_final = fait_final[:280].rsplit(' ', 1)[0].rstrip(' ,;:—–-') + '.'
 
@@ -98,19 +119,9 @@ def structurer_fiche(data_wiki, domaine="CURIOSITÉ", theme="Découverte"):
         }
     }
 
-def recuperer_ingenerie_extraordinaire():
-    """Recherche ciblée sur des prouesses et exploits d'ingénierie."""
-    mots_cles_recherche = [
-        "plus grand pont du monde",
-        "prouesse architecturale",
-        "tunnel le plus long",
-        "record ingénierie",
-        "structure la plus haute",
-        "machine la plus grande",
-        "exploit technologique"
-    ]
-    
-    requete = random.choice(mots_cles_recherche)
+def recuperer_fait_remarquable(requetes_recherche, domaine, theme):
+    """Effectue une recherche ciblée sur Wikipédia avec un mot-clé orienté 'prouesse/record'."""
+    requete = random.choice(requetes_recherche)
     url_search = f"https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(requete)}&utf8=&format=json"
 
     try:
@@ -130,9 +141,9 @@ def recuperer_ingenerie_extraordinaire():
             req_sum = urllib.request.Request(url_summary, headers={'User-Agent': 'NoseyBot/1.0'})
             with urllib.request.urlopen(req_sum, timeout=5) as resp_sum:
                 data_summary = json.loads(resp_sum.read().decode('utf-8'))
-                return structurer_fiche(data_summary, domaine="INGÉNIERIE", theme="Prouesse technique")
+                return structurer_fiche(data_summary, domaine=domaine, theme=theme)
     except Exception as e:
-        print(f"⚠️ Erreur recherche ingénierie : {e}")
+        print(f"⚠️ Erreur recherche {domaine} ({requete}) : {e}")
     
     return None
 
@@ -167,14 +178,34 @@ def main():
         except Exception as e:
             print(f"⚠️ Erreur sur '{item['sujet']}' : {e}")
 
-    # 2. Ajout automatique d'un fait d'ingénierie d'exception
+    # 2. Recherche ciblée d'exploits d'ingénierie
+    recherches_ingenerie = [
+        "plus long pont d'Europe", "plus grand pont du monde", "prouesse architecturale",
+        "tunnel le plus long", "record ingénierie", "structure la plus haute du monde", "machine la plus grande"
+    ]
     print("🏗️ Recherche d'une prouesse d'ingénierie...")
-    fiche_ingenerie = recuperer_ingenerie_extraordinaire()
-    if fiche_ingenerie:
-        sujet_ing = fiche_ingenerie['sujet'].strip().lower()
+    fiche_ing = recuperer_fait_remarquable(recherches_ingenerie, domaine="INGÉNIERIE", theme="Prouesse technique")
+    if fiche_ing:
+        sujet_ing = fiche_ing['sujet'].strip().lower()
         if sujet_ing not in sujets_fiches and sujet_ing not in sujets_candidates:
-            print(f"✨ Prouesse trouvée : {fiche_ingenerie['sujet']}")
-            nouvelles_candidates.append(fiche_ingenerie)
+            print(f"✨ Prouesse trouvée : {fiche_ing['sujet']}")
+            nouvelles_candidates.append(fiche_ing)
+            sujets_candidates.add(sujet_ing)
+            ajouts += 1
+
+    # 3. Recherche ciblée sur un fait scientifique étonnant
+    recherches_sciences = [
+        "découverte scientifique insolite", "phénomène physique unique", "adaptation animale exceptionnelle",
+        "organisme le plus ancien", "record biologique"
+    ]
+    print("🔬 Recherche d'une curiosité scientifique...")
+    fiche_sci = recuperer_fait_remarquable(recherches_sciences, domaine="SCIENCES", theme="Découverte")
+    if fiche_sci:
+        sujet_sci = fiche_sci['sujet'].strip().lower()
+        if sujet_sci not in sujets_fiches and sujet_sci not in sujets_candidates:
+            print(f"✨ Curiosité scientifique trouvée : {fiche_sci['sujet']}")
+            nouvelles_candidates.append(fiche_sci)
+            sujets_candidates.add(sujet_sci)
             ajouts += 1
 
     if ajouts > 0:
