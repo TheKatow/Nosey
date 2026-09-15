@@ -11,7 +11,6 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --danger: #ef4444;
-      --success: #10b981;
       --accent: #3b82f6;
     }
     body {
@@ -45,7 +44,6 @@
       transition: opacity 0.2s;
     }
     button:hover { opacity: 0.9; }
-    .btn-export-candidates { background-color: var(--success); color: white; }
     .btn-export-blacklist { background-color: var(--accent); color: white; }
     .compteur {
       font-size: 0.9rem;
@@ -101,7 +99,6 @@
   </header>
 
   <div class="actions-bar">
-    <button class="btn-export-candidates" onclick="telechargerJson('candidates.json', candidatesGlobales)">Télécharger candidates.json</button>
     <button class="btn-export-blacklist" onclick="telechargerJson('blacklist.json', blacklistGlobales)">Télécharger blacklist.json</button>
     <span class="compteur" id="compteur">0 fiche(s)</span>
   </div>
@@ -112,7 +109,6 @@
 
   <script>
     let fichesGlobales = [];
-    let candidatesGlobales = [];
     let blacklistGlobales = [];
     const CLE_BLACKLIST_SUJETS = 'nosey_blacklist_sujets';
 
@@ -120,13 +116,6 @@
       try {
         const resFiches = await fetch('data/fiches.json');
         fichesGlobales = await resFiches.json();
-
-        try {
-          const resCandidates = await fetch('data/candidates.json');
-          candidatesGlobales = await resCandidates.json();
-        } catch (e) {
-          candidatesGlobales = [];
-        }
 
         try {
           const resBlacklist = await fetch('data/blacklist.json');
@@ -180,9 +169,6 @@
         localStorage.setItem(CLE_BLACKLIST_SUJETS, JSON.stringify(blacklistGlobales));
 
         fichesGlobales.splice(index, 1);
-        candidatesGlobales = candidatesGlobales.filter(candidate => (
-          (candidate.sujet || '').trim().toLowerCase() !== sujetClean
-        ));
         afficherFiches();
       }
     }
