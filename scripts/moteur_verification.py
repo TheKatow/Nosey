@@ -3,6 +3,7 @@ import os
 import urllib.request
 
 CANDIDATES_FILE = 'data/candidates.json'
+BLACKLIST_FILE = 'data/blacklist.json'
 FICHES_FILE = 'data/fiches.json'
 
 def charger_json(fichier):
@@ -18,6 +19,37 @@ def sauvegarder_json(fichier, donnees):
     os.makedirs(os.path.dirname(fichier), exist_ok=True)
     with open(fichier, 'w', encoding='utf-8') as f:
         json.dump(donnees, f, ensure_ascii=False, indent=2)
+
+def normaliser_sujet(sujet):
+    return str(sujet or '').strip().lower()
+
+def nettoyer_blacklist(candidates, fiches):
+    """Retire les sujets blacklistés des fiches publiées et des candidates."""
+    blacklist = charger_json(BLACKLIST_FILE)
+    sujets_blacklistes = {
+        normaliser_sujet(sujet)
+        for sujet in blacklist
+        if isinstance(sujet, str) and normaliser_sujet(sujet)
+    }
+
+    if not sujets_blacklistes:
+        return candidates, fiches, 0, 0
+
+    candidates_filtrees = [
+        candidate for candidate in candidates
+        if normaliser_sujet(candidate.get('sujet')) not in sujets_blacklistes
+    ]
+    fiches_filtrees = [
+        fiche for fiche in fiches
+        if normaliser_sujet(fiche.get('sujet')) not in sujets_blacklistes
+    ]
+
+    return (
+        candidates_filtrees,
+        fiches_filtrees,
+        len(candidates) - len(candidates_filtrees),
+        len(fiches) - len(fiches_filtrees)
+    )
 
 def verifier_url(url):
     if not url:
@@ -70,6 +102,16 @@ def main():
     candidates = charger_json(CANDIDATES_FILE)
     fiches_validees = charger_json(FICHES_FILE)
 
+    candidates, fiches_validees, candidates_retirees, fiches_retirees = nettoyer_blacklist(
+        candidates,
+        fiches_validees
+    )
+    if candidates_retirees or fiches_retirees:
+        print(
+            f"🚫 Blacklist : {fiches_retirees} fiche(s) et "
+            f"{candidates_retirees} candidate(s) retirée(s)."
+        )
+
     ids_existants = {f.get('id') for f in fiches_validees if f.get('id')}
     candidates_restantes = []
     nouveaux_ajouts = 0
@@ -91,9 +133,12 @@ def main():
     # Reset du fichier candidates après traitement
     sauvegarder_json(CANDIDATES_FILE, candidates_restantes)
     
-    if nouveaux_ajouts > 0:
+    if nouveaux_ajouts > 0 or fiches_retirees > 0:
         sauvegarder_json(FICHES_FILE, fiches_validees)
-        print(f"\n💾 {nouveaux_ajouts} fiche(s) ajoutée(s) à {FICHES_FILE}.")
+        if nouveaux_ajouts > 0:
+            print(f"\n💾 {nouveaux_ajouts} fiche(s) ajoutée(s) à {FICHES_FILE}.")
+        elif fiches_retirees > 0:
+            print(f"\n💾 {fiches_retirees} fiche(s) blacklistée(s) retirée(s) de {FICHES_FILE}.")
     else:
         print("\nℹ️ Aucune nouvelle fiche validée.")
 
