@@ -111,5 +111,75 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
+  },
+  {
+    "id": "Q133823267",
+    "sujet": "Phryctorie",
+    "domaine": "HISTOIRE",
+    "theme": "Grèce antique",
+    "fait_texte": "La Phryctorie est un système de sémaphore utilisé dans la Grèce antique. Les tours étaient utilisées pour la transmission d'un message spécifique convenu à l'avance.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Phryctorie",
+    "image_url": "",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q723510",
+    "sujet": "Effet Mpemba",
+    "domaine": "SCIENCES",
+    "theme": "Physique",
+    "fait_texte": "L'effet Mpemba est une constatation empirique selon laquelle l’eau chaude gèlerait plus vite que l’eau froide dans des conditions de refroidissement similaires.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Effet_Mpemba",
+    "image_url": "",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q7918284",
+    "sujet": "Végétalisme",
+    "domaine": "NATURE",
+    "theme": "Environnement",
+    "fait_texte": "Le végétalisme est une pratique alimentaire excluant les produits animaux, aussi bien issus d'animaux morts que d'animaux vivants, et éventuellement les produits dont le procédé de fabrication fait intervenir des produits animaux.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/V%C3%A9g%C3%A9talisme",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Fruit%2C_Vegetables_and_Grain_-_NCI_Visuals_Online.jpg/330px-Fruit%2C_Vegetables_and_Grain_-_NCI_Visuals_Online.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q498671",
+    "sujet": "Lac Hillier",
+    "domaine": "NATURE",
+    "theme": "Géographie",
+    "fait_texte": "Le lac Hillier est une lagune australienne située sur l'île du Milieu, dans l'archipel de la Recherche , lui-même dans la Grande Baie australienne.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Lac_Hillier",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/LIQENI_HILLIER_-_ROZE.jpg/330px-LIQENI_HILLIER_-_ROZE.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q233737",
+    "sujet": "Pont Vasco de Gama",
+    "domaine": "INGÉNIERIE",
+    "theme": "Prouesse technique",
+    "fait_texte": "Le pont Vasco de Gama est un pont continu portugais, de type viaduc, qui franchit l'estuaire du Tage au Nord de Lisbonne sur une distance de 12,3 km.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Pont_Vasco_de_Gama",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Vasco_da_Gama_Bridge_aerial_view.jpg/330px-Vasco_da_Gama_Bridge_aerial_view.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]
