@@ -5,7 +5,7 @@ import urllib.parse
 
 CANDIDATES_FILE = 'data/candidates.json'
 FICHES_FILE = 'data/fiches.json'
-NTFY_TOPIC_URL = "https://ntfy.sh/nosey_app_alerts_78932"
+NTFY_TOPIC_URL = "https://ntfy.sh/Nosey"
 
 MOTS_INTERDITS = [
     "récemment", "l'année dernière", "actuellement", 
