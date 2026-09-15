@@ -830,5 +830,33 @@
       "positif": "☀️"
     },
     "statut": "VALIDE"
+  },
+  {
+    "id": "Q182324",
+    "sujet": "Machine d'Anticythère",
+    "domaine": "INGÉNIERIE",
+    "theme": "Archéologie technologique",
+    "fait_texte": "La machine d'Anticythère, appelée également mécanisme d'Anticythère, est considérée comme le premier calculateur analogique antique permettant de calculer des positions astronomiques.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Machine_d'Anticyth%C3%A8re",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg/330px-NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
+  },
+  {
+    "id": "Q3255094",
+    "sujet": "Liste des tunnels les plus longs du boulevard périphérique de Paris",
+    "domaine": "INGÉNIERIE",
+    "theme": "Prouesse technique",
+    "fait_texte": "Cet article recense les tunnels les plus longs du boulevard périphérique de Paris, à savoir ceux d'une longueur supérieure à 100 mètres.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Liste_des_tunnels_les_plus_longs_du_boulevard_p%C3%A9riph%C3%A9rique_de_Paris",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/BP-tunnels300.svg/langfr-330px-BP-tunnels300.svg.png?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]
