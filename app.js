@@ -1,7 +1,7 @@
-// Clés de stockage LocalStorage
-const CLE_STOCKAGE_DATE = 'nosey_derniere_lecture_date';
-const CLE_STOCKAGE_FICHE = 'nosey_fiche_du_jour';
+// Clé de stockage LocalStorage
 const CLE_HISTORIQUE_VUS = 'nosey_fiches_vues_ids';
+let fichesDisponibles = [];
+let ficheActuelle = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   chargerFicheDuJour();
@@ -20,61 +20,61 @@ function melangerTableau(tableau) {
 }
 
 /**
- * Charge et affiche la fiche du jour sans répétition
+ * Charge et affiche une fiche sans répétition jusqu'à épuisement du cycle
  */
 async function chargerFicheDuJour() {
-  const aujourdhui = new Date().toISOString().split('T')[0];
-  const derniereLecture = localStorage.getItem(CLE_STOCKAGE_DATE);
-
-  // 1. Si l'utilisateur a déjà lu sa fiche aujourd'hui -> Écran "À demain"
-  if (derniereLecture === aujourdhui) {
-    afficherEcranDejaLu();
-    return;
-  }
-
   try {
     const reponse = await fetch('data/fiches.json');
-    const fiches = await reponse.json();
+    fichesDisponibles = await reponse.json();
 
-    if (!fiches || fiches.length === 0) {
+    if (!fichesDisponibles || fichesDisponibles.length === 0) {
       afficherErreur("Aucune curiosité disponible pour le moment.");
       return;
     }
 
-    // 2. Récupérer la fiche verrouillée pour la journée en cours
-    let ficheDuJour = null;
-    const ficheSauvegardee = localStorage.getItem(CLE_STOCKAGE_FICHE);
-
-    if (ficheSauvegardee) {
-      ficheDuJour = JSON.parse(ficheSauvegardee);
-    } else {
-      // 3. Récupérer l'historique des cartes déjà vues
-      let vuesIds = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
-
-      // Filtrer pour ne garder que les fiches non encore vues
-      let nonVues = fiches.filter(f => !vuesIds.includes(f.id || f.sujet));
-
-      // Si toutes les fiches ont été vues, réinitialiser le cycle
-      if (nonVues.length === 0) {
-        vuesIds = [];
-        localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
-        nonVues = fiches;
-      }
-
-      // 4. Mélanger les fiches disponibles et sélectionner la première
-      const fichesMelangees = melangerTableau(nonVues);
-      ficheDuJour = fichesMelangees[0];
-
-      // Mémoriser le tirage pour la journée
-      localStorage.setItem(CLE_STOCKAGE_FICHE, JSON.stringify(ficheDuJour));
-    }
-
-    // 5. Affichage de la carte
-    afficherFiche(ficheDuJour);
+    afficherFiche(choisirProchaineFiche());
 
   } catch (erreur) {
     console.error("Erreur lors du chargement des fiches :", erreur);
-    afficherErreur("Impossible de charger la curiosité du jour.");
+    afficherErreur("Impossible de charger les curiosités.");
+  }
+}
+
+function obtenirVues() {
+  try {
+    return JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
+  } catch (erreur) {
+    return [];
+  }
+}
+
+function identifiantFiche(fiche) {
+  return String(fiche.id || fiche.sujet);
+}
+
+function choisirProchaineFiche() {
+  let vuesIds = obtenirVues();
+  let nonVues = fichesDisponibles.filter(fiche => !vuesIds.includes(identifiantFiche(fiche)));
+
+  if (nonVues.length === 0) {
+    vuesIds = [];
+    localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
+    nonVues = fichesDisponibles;
+  }
+
+  const fiche = melangerTableau(nonVues)[0];
+  ficheActuelle = fiche;
+  enregistrerFicheVue(fiche);
+  return fiche;
+}
+
+function enregistrerFicheVue(fiche) {
+  const vuesIds = obtenirVues();
+  const id = identifiantFiche(fiche);
+
+  if (!vuesIds.includes(id)) {
+    vuesIds.push(id);
+    localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
   }
 }
 
@@ -90,7 +90,9 @@ function afficherFiche(fiche) {
     : '';
 
   carteContainer.innerHTML = `
-    <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
+    <div class="navigation-fiche">
+      <button class="fleche-navigation fleche-gauche" onclick="afficherFicheSuivante()" aria-label="Afficher une autre curiosité" title="Autre curiosité">←</button>
+      <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
         <span class="theme-label">${fiche.theme || ''}</span>
@@ -115,7 +117,9 @@ function afficherFiche(fiche) {
           </button>
         </div>
       </footer>
-    </article>
+      </article>
+      <button class="fleche-navigation fleche-droite" onclick="afficherFicheSuivante()" aria-label="Afficher la curiosité suivante" title="Curiosité suivante">→</button>
+    </div>
   `;
 }
 
@@ -129,55 +133,22 @@ function reagir(ficheId, typeReaction) {
     carteElement.classList.add('carte-sortie');
 
     setTimeout(() => {
-      enregistrerLectureAujourdhui(ficheId);
-      afficherEcranDejaLu();
+      afficherFicheSuivante();
     }, 300);
   } else {
-    enregistrerLectureAujourdhui(ficheId);
-    afficherEcranDejaLu();
+    afficherFicheSuivante();
   }
 }
 
-/**
- * Enregistre la lecture, ajoute la fiche à l'historique et réinitialise la fiche temporaire
- */
-function enregistrerLectureAujourdhui(ficheId) {
-  const aujourdhui = new Date().toISOString().split('T')[0];
-  
-  // Enregistrer la date de lecture
-  localStorage.setItem(CLE_STOCKAGE_DATE, aujourdhui);
+function afficherFicheSuivante() {
+  if (!ficheActuelle || fichesDisponibles.length === 0) return;
 
-  // Ajouter la fiche à l'historique des fiches vues
-  const ficheCourante = JSON.parse(localStorage.getItem(CLE_STOCKAGE_FICHE) || '{}');
-  const idAAjouter = ficheId || ficheCourante.id || ficheCourante.sujet;
-
-  if (idAAjouter) {
-    const vuesIds = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
-    if (!vuesIds.includes(idAAjouter)) {
-      vuesIds.push(idAAjouter);
-      localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
-    }
+  const carteElement = document.querySelector('.carte');
+  if (carteElement) {
+    carteElement.classList.add('carte-sortie');
   }
 
-  // Nettoyage du tirage temporaire
-  localStorage.removeItem(CLE_STOCKAGE_FICHE);
-}
-
-/**
- * Affiche l'écran de fin « À demain »
- */
-function afficherEcranDejaLu() {
-  const carteContainer = document.getElementById('carte-container');
-  if (!carteContainer) return;
-
-  carteContainer.innerHTML = `
-    <div class="ecran-fin">
-      <div class="icon-fin">🧐</div>
-      <h2>C'est tout pour aujourd'hui !</h2>
-      <p>Reviens demain pour découvrir une nouvelle curiosité.</p>
-      <p class="sous-texte">Nosey — Un fait vérifié par jour.</p>
-    </div>
-  `;
+  setTimeout(() => afficherFiche(choisirProchaineFiche()), 250);
 }
 
 /**

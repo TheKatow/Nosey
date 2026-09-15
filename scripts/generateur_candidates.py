@@ -3,9 +3,12 @@ import os
 import re
 import urllib.request
 import urllib.parse
+import urllib.error
+from datetime import datetime, timezone
 
 CANDIDATES_FILE = 'data/candidates.json'
 FICHES_FILE = 'data/fiches.json'
+RECHERCHES_ECHECS_FILE = 'data/recherches_echecs.json'
 
 THEMES_INITIALS = [
     {"sujet": "Phryctorie", "domaine": "HISTOIRE", "theme": "Grèce antique"},
@@ -35,6 +38,32 @@ def charger_sujets_fiches_existantes():
     """Charge la liste des sujets déjà validés et stockés dans fiches.json."""
     fiches = charger_json(FICHES_FILE)
     return {f.get('sujet', '').strip().lower() for f in fiches if f.get('sujet')}
+
+def journaliser_echec_recherche(element, raison):
+    """Conserve les combinaisons Wikipédia qui ne produisent pas de fiche."""
+    echecs = charger_json(RECHERCHES_ECHECS_FILE)
+    sujet = element['sujet'].strip()
+    sujet_cle = sujet.lower()
+    maintenant = datetime.now(timezone.utc).isoformat()
+
+    entree = next((echec for echec in echecs if echec.get('sujet_cle') == sujet_cle), None)
+    if entree:
+        entree['dernier_echec'] = maintenant
+        entree['nombre_tentatives'] = entree.get('nombre_tentatives', 0) + 1
+        entree['raisons'] = sorted(set(entree.get('raisons', []) + [raison]))
+    else:
+        echecs.append({
+            'sujet': sujet,
+            'sujet_cle': sujet_cle,
+            'domaine': element.get('domaine', 'CURIOSITÉ'),
+            'theme': element.get('theme', 'Découverte'),
+            'premier_echec': maintenant,
+            'dernier_echec': maintenant,
+            'nombre_tentatives': 1,
+            'raisons': [raison]
+        })
+
+    sauvegarder_json(RECHERCHES_ECHECS_FILE, echecs)
 
 def rendre_fait_captivant(extract_texte):
     if not extract_texte:
@@ -83,6 +112,8 @@ def recuperer_fiche_wikipedia(element):
             fait_texte = rendre_fait_captivant(extract)
 
             if not fait_texte:
+                journaliser_echec_recherche(element, 'Réponse Wikipédia sans extrait exploitable')
+                print(f"⚠️ Combinaison sans résultat exploitable : '{sujet}'")
                 return None
 
             return {
@@ -99,7 +130,24 @@ def recuperer_fiche_wikipedia(element):
                     "positif": "☀️"
                 }
             }
+    except urllib.error.HTTPError as e:
+        raison = f'HTTP {e.code}'
+        journaliser_echec_recherche(element, raison)
+        print(f"⚠️ Combinaison non trouvée : '{sujet}' ({raison})")
+        return None
+    except (urllib.error.URLError, TimeoutError) as e:
+        raison = f'Erreur réseau : {e.reason if hasattr(e, "reason") else e}'
+        journaliser_echec_recherche(element, raison)
+        print(f"⚠️ Recherche indisponible : '{sujet}' ({raison})")
+        return None
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raison = f'Réponse Wikipédia invalide : {e.__class__.__name__}'
+        journaliser_echec_recherche(element, raison)
+        print(f"⚠️ Réponse invalide pour '{sujet}'")
+        return None
     except Exception as e:
+        raison = f'Erreur inattendue : {e.__class__.__name__}'
+        journaliser_echec_recherche(element, raison)
         print(f"⚠️ Erreur récupération Wikipédia pour '{sujet}' : {e}")
         return None
 
@@ -139,6 +187,10 @@ def main():
         print(f"💾 {ajouts} nouvelle(s) candidate(s) ajoutée(s) dans {CANDIDATES_FILE}.\n")
     else:
         print("✅ Aucun nouveau sujet à traiter (tous déjà présents dans fiches.json ou candidates.json).\n")
+
+    echecs_recherches = charger_json(RECHERCHES_ECHECS_FILE)
+    if echecs_recherches:
+        print(f"📋 {len(echecs_recherches)} combinaison(s) de recherche en échec suivie(s) dans {RECHERCHES_ECHECS_FILE}.")
 
 if __name__ == "__main__":
     main()

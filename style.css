@@ -42,6 +42,45 @@ body {
   width: 100%;
 }
 
+.navigation-fiche {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.navigation-fiche .carte {
+  flex: 1;
+  min-width: 0;
+}
+
+.fleche-navigation {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 72px;
+  border: 1px solid rgba(31, 41, 55, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--text-primary);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.62;
+  transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.fleche-navigation:hover,
+.fleche-navigation:focus-visible {
+  background: rgba(255, 255, 255, 0.9);
+  opacity: 1;
+  outline: none;
+  transform: scale(1.04);
+}
+
+.fleche-navigation:active {
+  transform: scale(0.96);
+}
+
 /* --- CARTE --- */
 .carte {
   background: var(--card-bg);
@@ -151,35 +190,13 @@ body {
   transform: scale(0.95);
 }
 
-/* --- ÉCRANS DE FIN & ERREURS --- */
-.ecran-fin, .ecran-erreur {
+/* --- ÉCRANS D'ERREUR --- */
+.ecran-erreur {
   background: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 32px 24px;
   text-align: center;
   box-shadow: var(--shadow);
-}
-
-.icon-fin {
-  font-size: 3rem;
-  margin-bottom: 12px;
-}
-
-.ecran-fin h2 {
-  font-size: 1.3rem;
-  margin-bottom: 8px;
-}
-
-.ecran-fin p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.sous-texte {
-  margin-top: 8px;
-  font-size: 0.85rem !important;
-  opacity: 0.8;
 }
 
 .btn-reset {
@@ -218,7 +235,7 @@ body {
 /* --- ANIMATIONS DE CARTE --- */
 
 /* Entrée fluide au chargement */
-.carte, .ecran-fin, .ecran-erreur {
+.carte, .ecran-erreur {
   animation: apparitionFiltre 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
