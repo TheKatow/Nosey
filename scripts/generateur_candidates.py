@@ -37,11 +37,20 @@ def charger_sujets_fiches_existantes():
     sujets.update({s.strip().lower() for s in blacklist if isinstance(s, str)})
     return sujets
 
+def est_phrase_meta_ou_vide(phrase):
+    """Détecte les phrases d'introduction abstraites qui ne contiennent aucun fait précis."""
+    mot_cles_meta = [
+        "peuvent être déterminés", "en fonction de divers critères", "se réfère à",
+        "désigne l'ensemble", "est une notion", "est un terme", "peut désigner",
+        "regroupe les", "fait référence à"
+    ]
+    p_lower = phrase.lower()
+    return any(m in p_lower for m in mot_cles_meta)
+
 def rendre_fait_captivant(extract_texte):
     if not extract_texte:
         return ""
 
-    # Nettoyage des parenthèses, crochets et espaces
     texte = re.sub(r'\([^)]*\)', '', extract_texte)
     texte = re.sub(r'\[[^\]]*\]', '', texte)
     texte = re.sub(r'\s+', ' ', texte).strip()
@@ -50,34 +59,26 @@ def rendre_fait_captivant(extract_texte):
     if not phrases:
         return ""
 
-    phrase_principale = phrases[0]
+    # Éliminer les phrases d'introduction vagues/méta
+    phrases_utiles = [p for p in phrases if not est_phrase_meta_ou_vide(p)]
+
+    if not phrases_utiles:
+        return ""
+
+    phrase_principale = phrases_utiles[0]
     phrase_anecdote = ""
 
-    # Recherche d'une phrase porteuse du contexte/record remarquable
-    for p in phrases[1:4]:
+    # Chercher une phrase secondaire avec un fait concret ou une entité nommée
+    for p in phrases_utiles[1:4]:
         if any(mot in p.lower() for mot in MOTS_CLES_VALEUR):
             phrase_anecdote = p
             break
 
-    # Assemblage
     if phrase_anecdote and len(phrase_principale + " " + phrase_anecdote) <= 280:
         fait_final = f"{phrase_principale} {phrase_anecdote}"
     else:
         fait_final = phrase_principale
 
-    # Vérification anti-fait banal : si la fiche contient une donnée chiffrée (ex: "12 km")
-    # mais aucun superlatif/contexte d'exception, on tente de forcer l'ajout d'une phrase qualificative.
-    contient_chiffre = bool(re.search(r'\d+\s*(km|m|mètres|kilomètres|ans|siècles)', fait_final, re.IGNORECASE))
-    contient_valeur = any(mot in fait_final.lower() for mot in MOTS_CLES_VALEUR)
-
-    if contient_chiffre and not contient_valeur:
-        # Essayer de trouver une phrase de contexte dans la suite de l'extrait
-        for p in phrases[1:5]:
-            if any(m in p.lower() for m in MOTS_CLES_VALEUR):
-                fait_final = f"{phrase_principale} {p}"
-                break
-
-    # Tronquage propre à 280 caractères
     if len(fait_final) > 280:
         fait_final = fait_final[:280].rsplit(' ', 1)[0].rstrip(' ,;:—–-') + '.'
 

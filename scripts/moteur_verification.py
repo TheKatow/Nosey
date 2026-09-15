@@ -87,6 +87,42 @@ def verifier_valeur_ajoutee_et_contexte(fiche):
 
     return True, "OK"
 
+def verifier_valeur_ajoutee_et_contexte(fiche):
+    texte = fiche.get('fait_texte', '').strip()
+    texte_lower = texte.lower()
+
+    # 1. Rejet des tournures méta/abstrait sans faits
+    mots_cles_meta = [
+        "peuvent être déterminés", "en fonction de divers critères", "se réfère à",
+        "désigne l'ensemble", "est une notion", "est un terme", "peut désigner"
+    ]
+    if any(m in texte_lower for m in mots_cles_meta):
+        return False, "Phrase d'introduction abstraite sans fait concret"
+
+    # 2. Exigence d'au moins un nom propre/exemple précis OU d'un chiffre
+    mots = texte.split()
+    # On cherche s'il y a des mots capitalisés au milieu de la phrase (exemples d'espèces, lieux, noms)
+    a_nom_propre_ou_exemple = any(m[0].isupper() for m in mots[1:] if m.isalpha())
+    a_chiffre = bool(re.search(r'\d+', texte))
+
+    if not (a_nom_propre_ou_exemple or a_chiffre):
+        return False, "Absence d'exemple précis, de nom propre ou de chiffre"
+
+    # 3. Exigence spécifique pour l'ingénierie
+    if fiche.get('domaine') == 'INGÉNIERIE':
+        mots_impact = MOTS_VALEUR_EXPLICITE + ['tonne', 'mètre', 'km', 'milliards', 'géant']
+        if not any(mot in texte_lower for mot in mots_impact):
+            return False, "Ingénierie sans chiffre ni fait marquant"
+
+    # 4. Vérification anti-banalité : mesure sans qualificatif
+    contient_mesure = bool(re.search(r'\d+\s*(km|m|mètres|kilomètres|ans|siècles|tonnes|kilos)', texte_lower))
+    contient_qualification = any(mot in texte_lower for mot in MOTS_VALEUR_EXPLICITE)
+
+    if contient_mesure and not contient_qualification:
+        return False, "Donnée chiffrée présente mais contexte/record non précisé"
+
+    return True, "OK"
+
 def valider_fiche(fiche):
     texte = fiche.get('fait_texte', '').strip()
     if not texte:
