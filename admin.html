@@ -45,6 +45,8 @@
       transition: opacity 0.2s;
     }
     button:hover { opacity: 0.9; }
+    .btn-export-candidates { background-color: var(--success); color: white; }
+    .btn-export-blacklist { background-color: var(--accent); color: white; }
     .compteur {
       font-size: 0.9rem;
       background: rgba(255,255,255,0.1);
@@ -99,6 +101,8 @@
   </header>
 
   <div class="actions-bar">
+    <button class="btn-export-candidates" onclick="telechargerJson('candidates.json', candidatesGlobales)">Télécharger candidates.json</button>
+    <button class="btn-export-blacklist" onclick="telechargerJson('blacklist.json', blacklistGlobales)">Télécharger blacklist.json</button>
     <span class="compteur" id="compteur">0 fiche(s)</span>
   </div>
 
@@ -179,8 +183,6 @@
         candidatesGlobales = candidatesGlobales.filter(candidate => (
           (candidate.sujet || '').trim().toLowerCase() !== sujetClean
         ));
-        telechargerJson('candidates.json', candidatesGlobales);
-        telechargerJson('blacklist.json', blacklistGlobales);
         afficherFiches();
       }
     }
