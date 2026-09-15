@@ -114,6 +114,7 @@
   <script>
     let fichesGlobales = [];
     let blacklistGlobales = [];
+    const CLE_BLACKLIST_SUJETS = 'nosey_blacklist_sujets';
 
     async function initialiser() {
       try {
@@ -125,6 +126,13 @@
           blacklistGlobales = await resBlacklist.json();
         } catch (e) {
           blacklistGlobales = [];
+        }
+
+        try {
+          const blacklistLocale = JSON.parse(localStorage.getItem(CLE_BLACKLIST_SUJETS) || '[]');
+          blacklistGlobales = [...new Set([...blacklistGlobales, ...blacklistLocale])];
+        } catch (e) {
+          // La blacklist locale invalide est ignorée.
         }
 
         afficherFiches();
@@ -158,10 +166,11 @@
       const sujet = fichesGlobales[index].sujet;
       if (confirm(`Supprimer définitivement la fiche "${sujet}" ?`)) {
         // Ajout à la blacklist si non présent
-        const sujetClean = sujet.trim().lower();
+        const sujetClean = sujet.trim().toLowerCase();
         if (!blacklistGlobales.includes(sujetClean)) {
           blacklistGlobales.push(sujetClean);
         }
+        localStorage.setItem(CLE_BLACKLIST_SUJETS, JSON.stringify(blacklistGlobales));
 
         // Retrait de la liste globale
         fichesGlobales.splice(index, 1);

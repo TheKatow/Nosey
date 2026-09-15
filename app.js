@@ -1,10 +1,17 @@
 // Clé de stockage LocalStorage
 const CLE_HISTORIQUE_VUS = 'nosey_fiches_vues_ids';
+const CLE_BLACKLIST_SUJETS = 'nosey_blacklist_sujets';
 let fichesDisponibles = [];
 let ficheActuelle = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   chargerFicheDuJour();
+});
+
+window.addEventListener('storage', evenement => {
+  if (evenement.key === CLE_BLACKLIST_SUJETS) {
+    appliquerBlacklistLocale();
+  }
 });
 
 /**
@@ -26,6 +33,19 @@ async function chargerFicheDuJour() {
   try {
     const reponse = await fetch('data/fiches.json');
     fichesDisponibles = await reponse.json();
+    let blacklist = [];
+    try {
+      const reponseBlacklist = await fetch('data/blacklist.json');
+      blacklist = await reponseBlacklist.json();
+    } catch (erreur) {
+      console.warn("Impossible de charger la blacklist distante, utilisation de la blacklist locale.");
+    }
+    const blacklistLocale = obtenirBlacklistLocale();
+    const sujetsBlacklistes = new Set([
+      ...blacklist,
+      ...blacklistLocale
+    ].map(normaliserSujet));
+    fichesDisponibles = fichesDisponibles.filter(fiche => !sujetsBlacklistes.has(normaliserSujet(fiche.sujet)));
 
     if (!fichesDisponibles || fichesDisponibles.length === 0) {
       afficherErreur("Aucune curiosité disponible pour le moment.");
@@ -38,6 +58,35 @@ async function chargerFicheDuJour() {
     console.error("Erreur lors du chargement des fiches :", erreur);
     afficherErreur("Impossible de charger les curiosités.");
   }
+}
+
+function normaliserSujet(sujet) {
+  return String(sujet || '').trim().toLowerCase();
+}
+
+function obtenirBlacklistLocale() {
+  try {
+    const blacklist = JSON.parse(localStorage.getItem(CLE_BLACKLIST_SUJETS) || '[]');
+    return Array.isArray(blacklist) ? blacklist : [];
+  } catch (erreur) {
+    return [];
+  }
+}
+
+function appliquerBlacklistLocale() {
+  const sujetsBlacklistes = new Set(obtenirBlacklistLocale().map(normaliserSujet));
+  const ficheSupprimee = ficheActuelle && sujetsBlacklistes.has(normaliserSujet(ficheActuelle.sujet));
+  fichesDisponibles = fichesDisponibles.filter(fiche => !sujetsBlacklistes.has(normaliserSujet(fiche.sujet)));
+
+  if (!ficheSupprimee) return;
+
+  if (fichesDisponibles.length === 0) {
+    ficheActuelle = null;
+    afficherErreur("Aucune curiosité disponible pour le moment.");
+    return;
+  }
+
+  afficherFiche(choisirProchaineFiche());
 }
 
 function obtenirVues() {
