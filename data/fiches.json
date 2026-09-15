@@ -161,5 +161,30 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
+  },
+  {
+    "id": "Q147096",
+    "sujet": "Bigaradier",
+    "domaine": "records",
+    "theme": "Découverte SPORT",
+    "fait_texte": "Le bigaradier, oranger amer ou oranger de Séville est une espèce d'arbres de la famille des rutacées .",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Bigaradier",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Bigaradier"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/plant/Seville-orange",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/Citrus_aurantium_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-042.jpg/330px-Citrus_aurantium_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-042.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]
