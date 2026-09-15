@@ -111,5 +111,30 @@
       "passer": "🌧️",
       "positif": "☀️"
     }
+  },
+  {
+    "id": "Q838691",
+    "sujet": "Muséum national d'histoire naturelle",
+    "domaine": "HISTOIRE",
+    "theme": "Découverte HISTOIRE",
+    "fait_texte": "Le Muséum national d'histoire naturelle est un établissement français d'enseignement supérieur, de recherche et de diffusion de la culture scientifique naturaliste, membre de l'alliance Sorbonne Université.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9um_national_d'histoire_naturelle",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Mus%C3%A9um_national_d'histoire_naturelle"
+      },
+      {
+        "nom": "CNRS",
+        "url": "http://www.ecoanthropologie.cnrs.fr/",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Mus%C3%A9um_national_d%27histoire_naturelle_logo_2018.svg/langfr-330px-Mus%C3%A9um_national_d%27histoire_naturelle_logo_2018.svg.png?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "passer": "🌧️",
+      "positif": "☀️"
+    }
   }
 ]
