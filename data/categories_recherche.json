@@ -1,0 +1,47 @@
+[
+  {
+    "categorie": "ANIMAL",
+    "domaine": "ANIMAL",
+    "categorie_wikipedia": "Animal"
+  },
+  {
+    "categorie": "SCIENCES",
+    "domaine": "SCIENCES",
+    "categorie_wikipedia": "Science"
+  },
+  {
+    "categorie": "INGENIERIE",
+    "domaine": "ARCHITECTURE",
+    "categorie_wikipedia": "Architecture"
+  },
+  {
+    "categorie": "HISTOIRE",
+    "domaine": "HISTOIRE",
+    "categorie_wikipedia": "Histoire"
+  },
+  {
+    "categorie": "HISTOIRE",
+    "domaine": "CULTURE",
+    "categorie_wikipedia": "Culture"
+  },
+    {
+        "categorie": "NATURE",
+        "domaine": "GÉOGRAPHIE",
+        "categorie_wikipedia": "Géographie"
+    },
+    {
+        "categorie": "SPORT",
+        "domaine": "SPORT",
+        "categorie_wikipedia": "Sport"
+    },
+    {
+        "categorie": "NATURE",
+        "domaine": "NATURE",
+        "categorie_wikipedia": "Nature"
+    },
+    {
+        "categorie": "NATURE",
+        "domaine": "PLANTES",
+        "categorie_wikipedia": "Plantes"
+    }
+]

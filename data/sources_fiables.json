@@ -1,0 +1,30 @@
+[
+  {
+    "nom": "Encyclopaedia Britannica",
+    "domaines": ["britannica.com"]
+  },
+  {
+    "nom": "National Geographic",
+    "domaines": ["nationalgeographic.com"]
+  },
+  {
+    "nom": "Smithsonian Magazine",
+    "domaines": ["smithsonianmag.com"]
+  },
+  {
+    "nom": "ScienceDirect",
+    "domaines": ["sciencedirect.com"]
+  },
+  {
+    "nom": "IUCN Red List",
+    "domaines": ["iucnredlist.org"]
+  },
+  {
+    "nom": "FAO",
+    "domaines": ["fao.org"]
+  },
+  {
+    "nom": "CNRS",
+    "domaines": ["cnrs.fr"]
+  }
+]

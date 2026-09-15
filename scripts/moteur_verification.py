@@ -138,6 +138,14 @@ def valider_fiche(fiche):
     if not texte.endswith(('.', '!', '?')):
         return False, "Absence de ponctuation finale"
 
+    sources = fiche.get('sources', [])
+    urls_sources = {
+        source.get('url') for source in sources
+        if isinstance(source, dict) and source.get('url')
+    }
+    if len(urls_sources) < 2:
+        return False, "Moins de deux sources distinctes"
+
     valide_contexte, raison_contexte = verifier_valeur_ajoutee_et_contexte(fiche)
     if not valide_contexte:
         return False, raison_contexte
