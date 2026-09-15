@@ -91,7 +91,8 @@ function appliquerBlacklistLocale() {
 
 function obtenirVues() {
   try {
-    return JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
+    const vues = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
+    return Array.isArray(vues) ? vues.map(String) : [];
   } catch (erreur) {
     return [];
   }
@@ -102,7 +103,9 @@ function identifiantFiche(fiche) {
 }
 
 function choisirProchaineFiche() {
-  let vuesIds = obtenirVues();
+  const idsDisponibles = new Set(fichesDisponibles.map(identifiantFiche));
+  let vuesIds = obtenirVues().filter(id => idsDisponibles.has(id));
+  localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
   let nonVues = fichesDisponibles.filter(fiche => !vuesIds.includes(identifiantFiche(fiche)));
 
   if (nonVues.length === 0) {
