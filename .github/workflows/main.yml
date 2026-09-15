@@ -49,7 +49,6 @@ jobs:
               
               subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
               subprocess.run(["python", "scripts/moteur_verification.py"], check=False)
-              subprocess.run(["python", "scripts/enrichir_images.py"], check=False)
               
               fiches_actuelles = compter_fiches_valides()
               
