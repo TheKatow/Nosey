@@ -43,5 +43,200 @@
         "categorie": "NATURE",
         "domaine": "PLANTES",
         "categorie_wikipedia": "Plantes"
+    },
+    {
+      "categorie": "RECORDS",
+      "domaine": "SUPERLATIFS",
+      "categorie_wikipedia": "Record"
+    },
+    {
+      "categorie": "RECORDS",
+      "domaine": "SUPERLATIFS",
+      "categorie_wikipedia": "Superlatif"
+    },
+    {
+      "categorie": "GEOGRAPHIE",
+      "domaine": "LIEUX_REMARQUABLES",
+      "categorie_wikipedia": "Lieu_extrême"
+    },
+    {
+      "categorie": "RECORDS",
+      "domaine": "SUPERLATIFS",
+      "categorie_wikipedia": "Record_du_monde"
+    },
+    {
+      "categorie": "RECORDS",
+      "domaine": "SUPERLATIFS",
+      "categorie_wikipedia": "Liste_de_superlatifs"
+    },
+    {
+      "categorie": "INGENIERIE",
+      "domaine": "TECHNOLOGIE",
+      "categorie_wikipedia": "Prouesse_technologique"
+    },
+    {
+      "categorie": "ANIMAL",
+      "domaine": "BIOLOGIE",
+      "categorie_wikipedia": "Anomalie_biologique"
+    },
+    {
+      "categorie": "NATURE",
+      "domaine": "PLANTES",
+      "categorie_wikipedia": "Arbre_remarquable"
+    },
+    {
+      "categorie": "ANIMAL",
+      "domaine": "BIOLOGIE",
+      "categorie_wikipedia": "Espèce_sans_nom_commun_connue"
+    },
+    {
+      "categorie": "ANIMAL",
+      "domaine": "BIOLOGIE",
+      "categorie_wikipedia": "Organisme_extrêmophile"
+    },
+    {
+      "categorie": "ANIMAL",
+      "domaine": "RECORDS_ANIMAUX",
+      "categorie_wikipedia": "Animal_de_record"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "PALEONTOLOGIE",
+      "categorie_wikipedia": "Fossile_remarquable"
+    },
+    {
+      "categorie": "INGENIERIE",
+      "domaine": "ARCHITECTURE",
+      "categorie_wikipedia": "Structure_les_plus_hautes_du_monde"
+    },
+    {
+      "categorie": "INGENIERIE",
+      "domaine": "ARCHITECTURE",
+      "categorie_wikipedia": "Pont_remarquable"
+    },
+    {
+      "categorie": "INGENIERIE",
+      "domaine": "ARCHITECTURE",
+      "categorie_wikipedia": "Gratte-ciel_de_plus_de_300_mètres"
+    },
+    {
+      "categorie": "INGENIERIE",
+      "domaine": "INFRASTRUCTURES",
+      "categorie_wikipedia": "Tunnel_exceptionnel"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "PATRIMOINE",
+      "categorie_wikipedia": "Monument_disparu"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "ARCHEOLOGIE",
+      "categorie_wikipedia": "Mégalithe_remarquable"
+    },
+    {
+      "categorie": "GEOGRAPHIE",
+      "domaine": "PHENOMENES_NATURELS",
+      "categorie_wikipedia": "Cratère_d'impact"
+    },
+    {
+      "categorie": "GEOGRAPHIE",
+      "domaine": "LIEUX_REMARQUABLES",
+      "categorie_wikipedia": "Île_inhabitée_remarquable"
+    },
+    {
+      "categorie": "NATURE",
+      "domaine": "PHENOMENES_NATURELS",
+      "categorie_wikipedia": "Volcan_actif"
+    },
+    {
+      "categorie": "GEOGRAPHIE",
+      "domaine": "LIEUX_REMARQUABLES",
+      "categorie_wikipedia": "Grotte_la_plus_profonde"
+    },
+    {
+      "categorie": "GEOGRAPHIE",
+      "domaine": "PHENOMENES_NATURELS",
+      "categorie_wikipedia": "Lieu_le_plus_froid"
+    },
+    {
+      "categorie": "NATURE",
+      "domaine": "METEOROLOGIE",
+      "categorie_wikipedia": "Phénomène_météorologique_extrême"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "ASTRONOMIE",
+      "categorie_wikipedia": "Objet_magnétique_interstellaire"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "ASTRONOMIE",
+      "categorie_wikipedia": "Exoplanète_remarquable"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "ASTRONOMIE",
+      "categorie_wikipedia": "Satellite_naturel_atypique"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "ESPACE",
+      "categorie_wikipedia": "Mission_spatiale_pionnière"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "ASTRONOMIE",
+      "categorie_wikipedia": "Événement_astronomique_rare"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "ARCHEOLOGIE",
+      "categorie_wikipedia": "Artefact_archéologique_inexpliqué"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "CULTURE",
+      "categorie_wikipedia": "Manuscrit_énigmatique"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "ARCHEOLOGIE",
+      "categorie_wikipedia": "Cité_perdue"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "HISTORIQUE",
+      "categorie_wikipedia": "Bataille_inhabituelle"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "TECHNOLOGIE",
+      "categorie_wikipedia": "Invention_abandonnée"
+    },
+    {
+      "categorie": "HISTOIRE",
+      "domaine": "CULTURE",
+      "categorie_wikipedia": "Légende_urbaine_historique"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "CHIMIE",
+      "categorie_wikipedia": "Isotope_instable"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "MATERIAUX",
+      "categorie_wikipedia": "Matériau_aux_propriétés_extrêmes"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "CHIMIE",
+      "categorie_wikipedia": "Élément_synthétique"
+    },
+    {
+      "categorie": "SCIENCES",
+      "domaine": "PHYSIQUE",
+      "categorie_wikipedia": "Expérience_physique_majeure"
     }
 ]

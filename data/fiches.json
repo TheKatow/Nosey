@@ -7,8 +7,8 @@
     "fait_texte": "Originaire des forêts tropicales d'Amérique du Sud, le bois de cœur du Peltogyne est brun à la coupe. Son exposition à l’air et aux UV le transforme naturellement en un violet profond. Extrêmement dur, il est recherché en ébénisterie de luxe et pour fabriquer des instruments de musique.",
     "localisation": "Amérique du Sud",
     "emojis": {
-      "positif": "☀️",
-      "passer": "🌧️"
+      "positif": "🌿",
+      "passer": "🍂"
     },
     "source_nom": "Wood Database",
     "source_url": "https://www.wood-database.com/purpleheart/",
@@ -94,122 +94,34 @@
     "source_url": "https://fr.wikipedia.org/wiki/Machine_d'Anticyth%C3%A8re",
     "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg/330px-NAMA_Machine_d%27Anticyth%C3%A8re_1.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
+      "passer": "🔧",
+      "positif": "⚙️"
     }
   },
   {
-    "id": "Q1144457",
-    "sujet": "Physique quantique",
-    "domaine": "SCIENCES",
-    "theme": "Découverte",
-    "fait_texte": "La physique quantique est un ensemble de théories physiques nées au XXe siècle, qui décrivent le comportement des atomes et des particules et permettent d'élucider certaines propriétés du rayonnement électromagnétique.",
+    "id": "Q170850",
+    "sujet": "Bombardement de Zanzibar",
+    "domaine": "SUPERLATIFS",
+    "theme": "Découverte RECORDS",
+    "fait_texte": "Le 27 août 1896, le bombardement de Zanzibar oppose le Royaume-Uni aux forces du nouveau sultan. Avec une durée d'à peine 38 minutes, cet affrontement détient le record de la guerre la plus courte de l'histoire.",
     "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Physique_quantique",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Hi%C3%A9rarchie_des_syst%C3%A8mes_physiques.png/330px-Hi%C3%A9rarchie_des_syst%C3%A8mes_physiques.png?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
-  },
-  {
-    "id": "Q838691",
-    "sujet": "Muséum national d'histoire naturelle",
-    "domaine": "HISTOIRE",
-    "theme": "Découverte HISTOIRE",
-    "fait_texte": "Le Muséum national d'histoire naturelle est un établissement français d'enseignement supérieur, de recherche et de diffusion de la culture scientifique naturaliste, membre de l'alliance Sorbonne Université.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9um_national_d'histoire_naturelle",
+    "source_url": "https://fr.wikipedia.org/wiki/Bombardement_de_Zanzibar",
     "sources": [
       {
         "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Mus%C3%A9um_national_d'histoire_naturelle"
-      },
-      {
-        "nom": "CNRS",
-        "url": "http://www.ecoanthropologie.cnrs.fr/",
-        "extrait": "Source externe référencée par Wikipédia."
-      }
-    ],
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Mus%C3%A9um_national_d%27histoire_naturelle_logo_2018.svg/langfr-330px-Mus%C3%A9um_national_d%27histoire_naturelle_logo_2018.svg.png?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
-  },
-  {
-    "id": "Q25271",
-    "sujet": "Station spatiale internationale",
-    "domaine": "ARCHITECTURE",
-    "theme": "Découverte INGENIERIE",
-    "fait_texte": "La Station spatiale internationale est une station spatiale placée en orbite terrestre basse et occupée en permanence depuis 2000 par un équipage international qui se consacre à la recherche scientifique en micropesanteur et dans l'environnement spatial.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Station_spatiale_internationale",
-    "sources": [
-      {
-        "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Station_spatiale_internationale"
+        "url": "https://fr.wikipedia.org/wiki/Bombardement_de_Zanzibar"
       },
       {
         "nom": "Encyclopaedia Britannica",
-        "url": "https://www.britannica.com/topic/International-Space-Station",
+        "url": "https://www.britannica.com/event/Anglo-Zanzibar-War",
         "extrait": "Source externe référencée par Wikipédia."
       }
     ],
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/The_station_pictured_from_the_SpaceX_Crew_Dragon_5.jpg/330px-The_station_pictured_from_the_SpaceX_Crew_Dragon_5.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "localisation": "forces du nouveau sultan",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/AngloZanzibarWar.jpg/330px-AngloZanzibarWar.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
-  },
-  {
-    "id": "Q147096",
-    "sujet": "Bigaradier",
-    "domaine": "records",
-    "theme": "Découverte SPORT",
-    "fait_texte": "Le bigaradier, oranger amer ou oranger de Séville est une espèce d'arbres de la famille des rutacées .",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Bigaradier",
-    "sources": [
-      {
-        "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Bigaradier"
-      },
-      {
-        "nom": "Encyclopaedia Britannica",
-        "url": "https://www.britannica.com/plant/Seville-orange",
-        "extrait": "Source externe référencée par Wikipédia."
-      }
-    ],
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/Citrus_aurantium_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-042.jpg/330px-Citrus_aurantium_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-042.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
-    }
-  },
-  {
-    "id": "Q1810082",
-    "sujet": "Le Point",
-    "domaine": "SCIENCES",
-    "theme": "Découverte SCIENCES",
-    "fait_texte": "Le Point est un magazine d'actualité hebdomadaire français, créé en 1972 par une équipe de journalistes venant essentiellement de L'Express et proches d'Olivier Chevrillon et de Claude Imbert.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Le_Point",
-    "sources": [
-      {
-        "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Le_Point"
-      },
-      {
-        "nom": "CNRS",
-        "url": "https://www.iledefrance-gif.cnrs.fr/fr/cnrsinfo/palmares-2025-des-inventeurs-du-point-plusieurs-laureats-issus-de-laboratoires-cnrs-paris",
-        "extrait": "Source externe référencée par Wikipédia."
-      }
-    ],
-    "image_url": "",
-    "emojis": {
-      "passer": "🌧️",
-      "positif": "☀️"
+      "passer": "📏",
+      "positif": "👑"
     }
   }
 ]

@@ -23,6 +23,8 @@ jobs:
 
       - name: Exécution avec 3 tentatives (espacées d'une heure)
         id: processus_recuperation
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python - << 'EOF'
           import subprocess

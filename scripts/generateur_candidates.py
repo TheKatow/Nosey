@@ -1,13 +1,29 @@
 import base64
+import hashlib
 import json
 import logging
-import os
 import re
 import random
+import time
 import unicodedata
 import urllib.request
 import urllib.parse
 from html.parser import HTMLParser
+import os
+from google import genai
+from google.genai import types
+
+cle_api = os.environ.get('GEMINI_API_KEY')
+if not cle_api:
+    raise RuntimeError(
+        "GEMINI_API_KEY est absente. Définissez-la dans vos secrets GitHub."
+    )
+
+client = genai.Client(api_key=cle_api)
+MODELE_GEMINI = 'gemini-3.6-flash'
+CONFIG_GEMINI_SANS_AFC = types.GenerateContentConfig(
+    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,8 +44,8 @@ CATEGORIES_FILE = 'data/categories_recherche.json'
 
 MOTS_CLES_VALEUR = [
     'plus long', 'plus grand', 'plus haut', 'plus profond', 'plus ancien', 
-    'premi', 'unique', 'record', 'seul', 'particularité', 'prouesse', 
-    'exploit', 'découvert', 'inhabituel', 'exceptionnel'
+    'premier', 'unique', 'record', 'seul', 'particularité', 'prouesse', 
+    'exploit', 'découvert', 'inhabituel', 'exceptionnel', 'extrême'
 ]
 
 MOTS_CLES_RECORD = [
@@ -39,41 +55,44 @@ MOTS_CLES_RECORD = [
     'mètre', 'seconde', 'minute', 'heure', '%'
 ]
 
-class ResultatsRechercheParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.resultats = []
-        self.lien_courant = None
-        self.texte_courant = []
-        self.est_extrait = False
+EMOJIS_PAR_DOMAINE = {
+    'animal': {'positif': '🐾', 'passer': '🍂'},
+    'biologie': {'positif': '🧬', 'passer': '🍃'},
+    'nature': {'positif': '🌿', 'passer': '🍂'},
+    'plantes': {'positif': '🌱', 'passer': '🥀'},
+    'geographie': {'positif': '🗺️', 'passer': '🌫️'},
+    'phenomenes_naturels': {'positif': '🌋', 'passer': '🌪️'},
+    'meteorologie': {'positif': '🌤️', 'passer': '⛈️'},
+    'sciences': {'positif': '🔬', 'passer': '🧪'},
+    'astronomie': {'positif': '🌠', 'passer': '🌑'},
+    'espace': {'positif': '🚀', 'passer': '🛰️'},
+    'ingenierie': {'positif': '⚙️', 'passer': '🔧'},
+    'architecture': {'positif': '🏗️', 'passer': '🏚️'},
+    'technologie': {'positif': '💡', 'passer': '📟'},
+    'histoire': {'positif': '🏛️', 'passer': '⌛'},
+    'historique': {'positif': '📜', 'passer': '🕰️'},
+    'archeologie': {'positif': '🏺', 'passer': '⛏️'},
+    'patrimoine': {'positif': '🏰', 'passer': '🗿'},
+    'culture': {'positif': '🎨', 'passer': '🌫️'},
+    'records': {'positif': '🏆', 'passer': '🥈'},
+    'records_animaux': {'positif': '🥇', 'passer': '📉'},
+    'superlatifs': {'positif': '👑', 'passer': '📏'},
+    'chimie': {'positif': '⚗️', 'passer': '💥'},
+    'physique': {'positif': '⚛️', 'passer': '🌀'},
+    'materiaux': {'positif': '🧱', 'passer': '🪨'},
+    'paleontologie': {'positif': '🦴', 'passer': '🦕'},
+    'infrastructures': {'positif': '🌉', 'passer': '🚧'},
+    'lieux_remarquables': {'positif': '📍', 'passer': '🧭'},
+    'curiosite': {'positif': '✨', 'passer': '🌫️'},
+}
 
-    def handle_starttag(self, tag, attrs):
-        attributs = dict(attrs)
-        classes = attributs.get('class', '').split()
-        if tag == 'a' and 'result__a' in classes:
-            self.lien_courant = attributs.get('href')
-            self.texte_courant = []
-        elif tag in ('a', 'div') and 'result__snippet' in classes:
-            self.est_extrait = True
-            self.texte_courant = []
-
-    def handle_data(self, data):
-        if self.lien_courant is not None or self.est_extrait:
-            self.texte_courant.append(data)
-
-    def handle_endtag(self, tag):
-        if tag == 'a' and self.lien_courant is not None:
-            self.resultats.append({
-                'url': self.lien_courant,
-                'titre': ' '.join(self.texte_courant).strip(),
-                'extrait': ''
-            })
-            self.lien_courant = None
-            self.texte_courant = []
-        elif tag == 'div' and self.est_extrait:
-            if self.resultats:
-                self.resultats[-1]['extrait'] = ' '.join(self.texte_courant).strip()
-            self.est_extrait = False
+def choisir_emojis(domaine):
+    """Sélectionne les emojis uniquement selon le domaine de la fiche."""
+    domaine_normalise = normaliser_sujet(domaine)
+    return EMOJIS_PAR_DOMAINE.get(
+        domaine_normalise,
+        EMOJIS_PAR_DOMAINE['curiosite']
+    ).copy()
 
 class ResultatsBingParser(HTMLParser):
     def __init__(self):
@@ -137,55 +156,109 @@ def charger_sujets_fiches_existantes():
     sujets.update({normaliser_sujet(s) for s in blacklist if isinstance(s, str)})
     return sujets
 
-def est_phrase_meta_ou_vide(phrase):
-    """Détecte les phrases d'introduction abstraites qui ne contiennent aucun fait précis."""
-    mot_cles_meta = [
-        "peuvent être déterminés", "en fonction de divers critères", "se réfère à",
-        "désigne l'ensemble", "est une notion", "est un terme", "peut désigner",
-        "regroupe les", "fait référence à"
-    ]
-    p_lower = phrase.lower()
-    return any(m in p_lower for m in mot_cles_meta)
-
-def rendre_fait_captivant(extract_texte):
-    if not extract_texte:
+def sommer_article_en_fait(sujet, extract_texte):
+    """Utilise Gemini pour transformer un extrait Wikipédia en un fait marquant."""
+    if not extract_texte or len(extract_texte.strip()) < 50:
         return ""
 
-    texte = re.sub(r'\([^)]*\)', '', extract_texte)
-    texte = re.sub(r'\[[^\]]*\]', '', texte)
-    texte = re.sub(r'\s+', ' ', texte).strip()
+    prompt = f"""
+Tu es l'éditeur de l'application Nosey. Résume l'article Wikipédia sur « {sujet} » en 2 ou 3 phrases.
 
-    phrases = re.split(r'(?<=[.!?])\s+', texte)
-    if not phrases:
+Extrait source :
+{extract_texte}
+
+Consignes strictes :
+1. Rédige un fait captivant de 15 à 80 mots maximum qui se termine par un point.
+2. Le fait DOIT obligatoirement contenir :
+   - Une donnée chiffrée (avec mesure, quantité ou date).
+   - Un exemple d'usage, de réalisation, d'effet ou de particularité unique.
+   - Une localisation explicite (pays, ville, région ou milieu naturel).
+3. INTERDICTION ABSOLUE des phrases d'introduction vagues ou génériques (ex: "X peut être déterminé selon divers critères...").
+4. Si l'extrait ne contient aucun fait précis ou exemple concret, réponds exactement "INVALIDE".
+
+Formate la réponse sous forme de texte brut sans guillemets ni puces.
+"""
+
+    try:
+        response = None
+        for tentative in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=MODELE_GEMINI,
+                    contents=prompt,
+                    config=CONFIG_GEMINI_SANS_AFC,
+                )
+                break
+            except Exception as erreur:
+                erreur_texte = str(erreur)
+                quota_epuise = '429' in erreur_texte or 'RESOURCE_EXHAUSTED' in erreur_texte
+                if quota_epuise:
+                    raise LimitationReseau(
+                        "Quota Gemini épuisé. Attendez le renouvellement du quota "
+                        "ou utilisez un projet avec facturation activée."
+                    ) from erreur
+                est_indisponible = '503' in erreur_texte or 'UNAVAILABLE' in erreur_texte
+                if not est_indisponible or tentative == 2:
+                    raise
+                delai = 2 ** tentative
+                logger.warning("Gemini indisponible pour '%s' ; tentative dans %d s.", sujet, delai)
+                time.sleep(delai)
+
+        if not response:
+            return ""
+
+        resultat = response.text.strip()
+        if re.fullmatch(r'INVALIDE[.!]?', resultat, re.IGNORECASE):
+            logger.info("Gemini a rejeté l'extrait de '%s' : fait insuffisant.", sujet)
+            return ""
+
+        return resultat
+    except LimitationReseau:
+        raise
+    except Exception as erreur:
+        logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
         return ""
 
-    # Éliminer les phrases d'introduction vagues/méta
-    phrases_utiles = [p for p in phrases if not est_phrase_meta_ou_vide(p)]
+def extraire_localisation(fait_texte):
+    correspondance = re.search(
+        r"\b(?:en|à|au|aux|dans|sur|près de|originaire de)\s+"
+        r"([A-ZÀ-ÖØ-Ý][\wÀ-ÿ'-]*(?:\s+(?:de|du|des|d'|la|le|les|[A-ZÀ-ÖØ-Ý][\wÀ-ÿ'-]*)){0,4})",
+        fait_texte,
+        re.IGNORECASE
+    )
+    return correspondance.group(1).strip() if correspondance else ''
 
-    if not phrases_utiles:
-        return ""
+def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="Découverte", fait_texte=None):
+    sujet = data_wiki.get('title', '').strip()
+    if fait_texte is None:
+        fait_texte = sommer_article_en_fait(sujet, data_wiki.get('extract', ''))
+    
+    source_url = data_wiki.get('content_urls', {}).get('desktop', {}).get('page', '')
+    localisation = extraire_localisation(fait_texte)
 
-    phrase_principale = phrases_utiles[0]
-    phrase_anecdote = ""
+    if not fait_texte or not localisation or not source_url or not source_secondaire:
+        return None
 
-    # Chercher une phrase secondaire avec un fait concret ou une entité nommée
-    for p in phrases_utiles[1:4]:
-        if any(mot in p.lower() for mot in MOTS_CLES_VALEUR):
-            phrase_anecdote = p
-            break
+    identifiant = data_wiki.get('wikibase_item')
+    if not identifiant:
+        identifiant = 'id_' + hashlib.sha1(sujet.encode('utf-8')).hexdigest()[:12]
 
-    if phrase_anecdote and len(phrase_principale + " " + phrase_anecdote) <= 280:
-        fait_final = f"{phrase_principale} {phrase_anecdote}"
-    else:
-        fait_final = phrase_principale
-
-    if len(fait_final) > 280:
-        fait_final = fait_final[:280].rsplit(' ', 1)[0].rstrip(' ,;:—–-') + '.'
-
-    if not fait_final.endswith(('.', '!', '?')):
-        fait_final += '.'
-
-    return fait_final
+    return {
+        "id": identifiant,
+        "sujet": sujet,
+        "domaine": domaine,
+        "theme": theme,
+        "fait_texte": fait_texte,
+        "source_nom": "Wikipédia",
+        "source_url": source_url,
+        "sources": [
+            {"nom": "Wikipédia", "url": source_url},
+            source_secondaire
+        ],
+        "localisation": localisation,
+        "image_url": data_wiki.get('thumbnail', {}).get('source', ''),
+        "emojis": choisir_emojis(domaine)
+    }
 
 def fait_remarquable(fait_texte, domaine):
     texte = normaliser_sujet(fait_texte)
@@ -211,7 +284,7 @@ def fait_remarquable(fait_texte, domaine):
 
 def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
     mots_fait = {mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)}
-    logger.info("Seconde source pour '%s' : %d mots-clés à comparer.", sujet, len(mots_fait))
+    logger.info("Seconde source pour '%s' : %d mots-clés.", sujet, len(mots_fait))
 
     try:
         parametres = urllib.parse.urlencode({
@@ -234,7 +307,6 @@ def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
         liens_externes = []
         for page in donnees.get('query', {}).get('pages', {}).values():
             liens_externes.extend(lien.get('*', '') for lien in page.get('extlinks', []))
-        logger.info("Wikipédia a fourni %d lien(s) externe(s) pour '%s'.", len(liens_externes), sujet)
 
         for source in sources_fiables:
             domaines = source.get('domaines', [])
@@ -253,7 +325,6 @@ def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
             domaines = source.get('domaines', [])
             if not domaines:
                 continue
-            logger.info("Recherche web de secours pour '%s' sur %s.", sujet, domaines[0])
             requete = urllib.parse.quote(f'"{sujet}" site:{domaines[0]}')
             url_recherche = f'https://www.bing.com/search?q={requete}'
             req = urllib.request.Request(url_recherche, headers={'User-Agent': 'Mozilla/5.0'})
@@ -264,10 +335,8 @@ def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
             except urllib.error.HTTPError as erreur:
                 if erreur.code == 429:
                     raise LimitationReseau(f"Bing limite la recherche de '{sujet}'") from erreur
-                logger.warning("Recherche Bing limitée ou refusée pour %s.", domaines[0])
                 continue
 
-            logger.info("Bing a renvoyé %d résultat(s) pour %s.", len(parser.resultats), domaines[0])
             for resultat in parser.resultats:
                 url = resultat['url']
                 parametres = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
@@ -294,41 +363,9 @@ def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
     except Exception as erreur:
         logger.exception("Recherche de source secondaire impossible pour '%s' : %s", sujet, erreur)
 
-    logger.warning("Aucune seconde source fiable trouvée pour '%s'.", sujet)
     return None
 
-def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="Découverte"):
-    sujet = data_wiki.get('title', '')
-    extract = data_wiki.get('extract', '')
-    fait_texte = rendre_fait_captivant(extract)
-
-    if not fait_texte:
-        return None
-
-    return {
-        "id": data_wiki.get('wikibase_item', f"id_{hash(sujet)}"),
-        "sujet": sujet,
-        "domaine": domaine,
-        "theme": theme,
-        "fait_texte": fait_texte,
-        "source_nom": "Wikipédia",
-        "source_url": data_wiki.get('content_urls', {}).get('desktop', {}).get('page', ''),
-        "sources": [
-            {
-                "nom": "Wikipédia",
-                "url": data_wiki.get('content_urls', {}).get('desktop', {}).get('page', '')
-            },
-            source_secondaire
-        ],
-        "image_url": data_wiki.get('thumbnail', {}).get('source', ''),
-        "emojis": {
-            "passer": "🌧️",
-            "positif": "☀️"
-        }
-    }
-
 def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, theme):
-    """Effectue une recherche ciblée sur Wikipédia avec un mot-clé orienté 'prouesse/record'."""
     requete = random.choice(requetes_recherche)
     logger.info("Recherche Wikipédia dans le domaine %s avec la requête '%s'.", domaine, requete)
     url_search = f"https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(requete)}&utf8=&format=json"
@@ -338,17 +375,17 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
         with urllib.request.urlopen(req, timeout=5) as resp:
             data = json.loads(resp.read().decode('utf-8'))
             resultats = data.get('query', {}).get('search', [])
-            logger.info("Wikipédia a renvoyé %d résultat(s) pour '%s'.", len(resultats), requete)
             
             if not resultats:
-                logger.warning("Aucun résultat Wikipédia pour '%s'.", requete)
                 return None
             
-            resultats_a_tester = resultats[:5].copy()
-            random.shuffle(resultats_a_tester)
+            titres_a_tester = list(dict.fromkeys(
+                [requete] + [resultat.get('title', '') for resultat in resultats]
+            ))
+            resultats_a_tester = [{'title': titre} for titre in titres_a_tester if titre][:6]
+
             for choix in resultats_a_tester:
                 titre = choix['title']
-                logger.info("Article Wikipédia testé : '%s'.", titre)
                 titre_encode = urllib.parse.quote(titre.replace(" ", "_"))
                 url_summary = f"https://fr.wikipedia.org/api/rest_v1/page/summary/{titre_encode}"
 
@@ -359,30 +396,24 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                 except urllib.error.HTTPError as erreur:
                     if erreur.code == 429:
                         raise LimitationReseau(f"Wikipédia limite le résumé de '{titre}'") from erreur
-                    logger.warning("Résumé Wikipédia inaccessible pour '%s' : %s", titre, erreur)
                     continue
 
-                fait_texte = rendre_fait_captivant(data_summary.get('extract', ''))
-                logger.info("Résumé reçu pour '%s' : %d caractères de fait exploitable.", titre, len(fait_texte))
-                if not fait_texte:
-                    logger.info("Article ignoré : aucun fait exploitable pour '%s'.", titre)
-                    continue
-                if not fait_remarquable(fait_texte, domaine):
-                    logger.info("Article ignoré : fait trop générique ou non remarquable pour '%s'.", titre)
+                fait_texte = sommer_article_en_fait(titre, data_summary.get('extract', ''))
+                if not fait_texte or not fait_remarquable(fait_texte, domaine):
                     continue
 
                 source_secondaire = chercher_source_secondaire(titre, fait_texte, sources_fiables)
                 if source_secondaire:
                     logger.info("Article retenu : '%s'.", titre)
-                    return structurer_fiche(data_summary, source_secondaire, domaine=domaine, theme=theme)
-                logger.info("Article écarté : aucune seconde source pour '%s'.", titre)
+                    return structurer_fiche(
+                        data_summary,
+                        source_secondaire,
+                        domaine=domaine,
+                        theme=theme,
+                        fait_texte=fait_texte
+                    )
 
-            logger.warning("Aucun des %d articles testés ne possède de seconde source fiable.", len(resultats_a_tester))
             return None
-    except urllib.error.HTTPError as erreur:
-        if erreur.code == 429:
-            raise LimitationReseau(f"Wikipédia limite la recherche de '{requete}'") from erreur
-        logger.exception("Erreur HTTP recherche %s (%s) : %s", domaine, requete, erreur)
     except LimitationReseau:
         raise
     except Exception as e:
@@ -397,15 +428,12 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
         if isinstance(entree, dict) and entree.get('sujet')
     }
     sujets_exclus = sujets_exclus | sujets_deja_recherches
-    logger.info("Choix dynamique : %d catégorie(s), %d sujet(s) déjà exclus.", len(categories), len(sujets_exclus))
 
     categories_melangees = random.sample(categories, len(categories))
     for categorie in categories_melangees:
         nom_categorie = categorie.get('categorie_wikipedia')
         if not nom_categorie:
-            logger.warning("Catégorie ignorée : champ categorie_wikipedia absent.")
             continue
-        logger.info("Interrogation de la catégorie Wikipédia '%s'.", nom_categorie)
 
         parametres = urllib.parse.urlencode({
             'action': 'query',
@@ -426,7 +454,6 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
                 article for article in articles
                 if normaliser_sujet(article.get('title')) not in sujets_exclus
             ]
-            logger.info("Catégorie '%s' : %d article(s) disponible(s) après exclusion.", nom_categorie, len(articles))
             if articles:
                 return categorie, random.choice(articles)['title']
         except Exception as erreur:
@@ -435,7 +462,7 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
     return None, None
 
 def main():
-    logger.info("Génération des candidates...")
+    logger.info("Génération des candidates Nosey...")
     
     sujets_fiches = charger_sujets_fiches_existantes()
     candidates_existantes = charger_json(CANDIDATES_FILE)
@@ -443,17 +470,12 @@ def main():
     historique_recherches = charger_json(RECHERCHES_FILE)
     categories = charger_json(CATEGORIES_FILE)
     sujets_candidates = {normaliser_sujet(c.get('sujet')) for c in candidates_existantes if c.get('sujet')}
-    logger.info(
-        "Données chargées : %d fiche(s), %d candidate(s), %d source(s), %d recherche(s), %d catégorie(s).",
-        len(sujets_fiches), len(candidates_existantes), len(sources_fiables),
-        len(historique_recherches), len(categories)
-    )
 
     nouvelles_candidates = list(candidates_existantes)
     ajouts = 0
 
     if not sources_fiables or not categories:
-        logger.error("Configuration de catégories ou de sources fiables absente.")
+        logger.error("Configuration absente (categories_recherche.json ou sources_fiables.json).")
         return
 
     categorie, sujet_recherche = choisir_sujet_dynamique(
@@ -462,12 +484,13 @@ def main():
         sujets_fiches | sujets_candidates
     )
     if not categorie or not sujet_recherche:
-        logger.info("Aucun nouveau sujet trouvé dans les catégories disponibles.")
+        logger.info("Aucun nouveau sujet disponible dans les catégories actuelles.")
         return
 
     nom_categorie = categorie.get('categorie', 'CURIOSITÉ')
     domaine = categorie.get('domaine', 'CURIOSITÉ')
-    logger.info("Recherche dynamique : %s - %s.", nom_categorie, sujet_recherche)
+    logger.info("Traitement du sujet : %s (%s)", sujet_recherche, nom_categorie)
+
     try:
         fiche = recuperer_fait_remarquable(
             [sujet_recherche],
@@ -476,35 +499,22 @@ def main():
             theme=f"Découverte {nom_categorie}"
         )
     except LimitationReseau as erreur:
-        logger.warning(
-            "%s. Sujet conservé pour une prochaine exécution : '%s'.",
-            erreur, sujet_recherche
-        )
+        logger.warning("%s. Sujet reporté : '%s'.", erreur, sujet_recherche)
         return
+
     if fiche:
-        historique_recherches.append({
-            'categorie': nom_categorie,
-            'sujet': sujet_recherche
-        })
+        historique_recherches.append({'categorie': nom_categorie, 'sujet': sujet_recherche})
         sauvegarder_json(RECHERCHES_FILE, historique_recherches)
-        logger.info("Historique sauvegardé dans %s.", RECHERCHES_FILE)
+        
         sujet = normaliser_sujet(fiche['sujet'])
         if sujet not in sujets_fiches and sujet not in sujets_candidates:
-            logger.info("Curiosité confirmée : %s.", fiche['sujet'])
+            logger.info("Nouvelle fiche candidate retenue : %s", fiche['sujet'])
             nouvelles_candidates.append(fiche)
-            sujets_candidates.add(sujet)
             ajouts += 1
-    else:
-        logger.info(
-            "Aucun article valable pour '%s' : sujet conservé pour une prochaine exécution.",
-            sujet_recherche
-        )
 
     if ajouts > 0:
         sauvegarder_json(CANDIDATES_FILE, nouvelles_candidates)
-        logger.info("%d nouvelle(s) candidate(s) enregistrée(s) dans %s.", ajouts, CANDIDATES_FILE)
-    else:
-        logger.info("Aucun nouvel ajout requis.")
+        logger.info("%d nouvelle candidate enregistrée.", ajouts)
 
 if __name__ == "__main__":
     main()
