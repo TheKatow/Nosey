@@ -3,6 +3,8 @@ const CLE_HISTORIQUE_VUS = 'nosey_fiches_vues_ids';
 const CLE_BLACKLIST_SUJETS = 'nosey_blacklist_sujets';
 let fichesDisponibles = [];
 let ficheActuelle = null;
+let historiqueNavigation = [];
+let positionHistorique = -1;
 
 document.addEventListener('DOMContentLoaded', () => {
   chargerFicheDuJour();
@@ -27,7 +29,8 @@ function melangerTableau(tableau) {
 }
 
 /**
- * Charge et affiche une fiche sans répétition jusqu'à épuisement du cycle
+ * Charge et affiche une fiche sans répétition jusqu'à épuisement du cycle.
+ * La limite d'une fiche par jour est désactivée pour le moment.
  */
 async function chargerFicheDuJour() {
   try {
@@ -117,6 +120,9 @@ function choisirProchaineFiche() {
   const fiche = melangerTableau(nonVues)[0];
   ficheActuelle = fiche;
   enregistrerFicheVue(fiche);
+  historiqueNavigation = historiqueNavigation.slice(0, positionHistorique + 1);
+  historiqueNavigation.push(fiche);
+  positionHistorique = historiqueNavigation.length - 1;
   return fiche;
 }
 
@@ -143,7 +149,7 @@ function afficherFiche(fiche) {
 
   carteContainer.innerHTML = `
     <div class="navigation-fiche">
-      <button class="fleche-navigation fleche-gauche" onclick="afficherFicheSuivante()" aria-label="Afficher une autre curiosité" title="Autre curiosité">←</button>
+      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${positionHistorique <= 0 ? 'disabled' : ''}>&lt;</button>
       <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
@@ -170,7 +176,7 @@ function afficherFiche(fiche) {
         </div>
       </footer>
       </article>
-      <button class="fleche-navigation fleche-droite" onclick="afficherFicheSuivante()" aria-label="Afficher la curiosité suivante" title="Curiosité suivante">→</button>
+      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante">&gt;</button>
     </div>
   `;
 }
@@ -200,7 +206,30 @@ function afficherFicheSuivante() {
     carteElement.classList.add('carte-sortie');
   }
 
-  setTimeout(() => afficherFiche(choisirProchaineFiche()), 250);
+  setTimeout(() => {
+    if (positionHistorique < historiqueNavigation.length - 1) {
+      positionHistorique += 1;
+      ficheActuelle = historiqueNavigation[positionHistorique];
+      afficherFiche(ficheActuelle);
+      return;
+    }
+    afficherFiche(choisirProchaineFiche());
+  }, 250);
+}
+
+function afficherFichePrecedente() {
+  if (positionHistorique <= 0) return;
+
+  const carteElement = document.querySelector('.carte');
+  if (carteElement) {
+    carteElement.classList.add('carte-sortie');
+  }
+
+  setTimeout(() => {
+    positionHistorique -= 1;
+    ficheActuelle = historiqueNavigation[positionHistorique];
+    afficherFiche(ficheActuelle);
+  }, 250);
 }
 
 /**

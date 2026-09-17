@@ -81,6 +81,11 @@ body {
   transform: scale(0.96);
 }
 
+.fleche-navigation:disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
+
 /* --- CARTE --- */
 .carte {
   background: var(--card-bg);
