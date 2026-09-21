@@ -46,26 +46,49 @@ jobs:
                       return 0
               return 0
 
+          fiches_avant = compter_fiches_valides()
+          print(f"📌 Avant collecte : {fiches_avant} fiche(s) valide(s) déjà présente(s).")
+
           for essai in range(1, MAX_TENTATIVES + 1):
               print(f"🔄 Tentative {essai}/{MAX_TENTATIVES}...")
-              
+
               subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
               subprocess.run(["python", "scripts/moteur_verification.py"], check=False)
-              
+
               fiches_actuelles = compter_fiches_valides()
-              
+              nouvelles_fiches = max(fiches_actuelles - fiches_avant, 0)
+
               if fiches_actuelles >= 2:
                   print(f"✅ Succès ! {fiches_actuelles} fiches valides disponibles.")
+                  print(f"📌 Résumé : {nouvelles_fiches} nouvelle(s) fiche(s) ajoutée(s) / trouvée(s) dans cette exécution.")
+                  if os.environ.get('GITHUB_STEP_SUMMARY'):
+                      with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+                          summary.write("### Résumé de la routine Nosey\n")
+                          if nouvelles_fiches > 0:
+                              summary.write(f"- ✅ {nouvelles_fiches} fiche(s) ajoutée(s) ou retrouvée(s) depuis le dernier passage.\n")
+                          else:
+                              summary.write("- ℹ️ Aucune nouvelle fiche ajoutée ; les fiches existantes sont déjà présentes.\n")
+                          summary.write(f"- Total final : {fiches_actuelles} fiche(s) valide(s).\n\n")
                   SUCCES = True
                   break
               else:
                   print(f"⚠️ Moins de 2 fiches disponibles ({fiches_actuelles} trouvée(s)).")
+                  if nouvelles_fiches > 0:
+                      print(f"📌 Cette tentative a ajouté {nouvelles_fiches} fiche(s), mais la cible minimale de 2 n'est pas encore atteinte.")
+                  else:
+                      print("📌 Aucune nouvelle fiche détectée dans cette tentative.")
                   if essai < MAX_TENTATIVES:
                       print("⏳ Attente de 1 heure avant la prochaine tentative...")
                       time.sleep(ATTENTE_SECONDES)
 
           if not SUCCES:
-              print("❌ Échec critique après 3 tentatives.")
+              fiches_finales = compter_fiches_valides()
+              print(f"❌ Échec critique après 3 tentatives. Total final : {fiches_finales} fiche(s) valide(s).")
+              if os.environ.get('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+                      summary.write("### Résumé de la routine Nosey\n")
+                      summary.write("- ❌ Aucune fiche suffisante n'a été trouvée après 3 tentatives.\n")
+                      summary.write(f"- Total final : {fiches_finales} fiche(s) valide(s).\n")
               exit(1)
           EOF
 
