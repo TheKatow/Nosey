@@ -428,8 +428,14 @@ def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
 
     return None
 
+def construire_requete_remarquable(sujet):
+    """Oriente la recherche vers des sujets inhabituels dans la catégorie choisie."""
+    qualificatifs = 'exceptionnel OR extraordinaire OR remarquable OR rare'
+    return f'{sujet} ({qualificatifs})'
+
 def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, theme):
-    requete = random.choice(requetes_recherche)
+    sujet = random.choice(requetes_recherche)
+    requete = construire_requete_remarquable(sujet)
     logger.info("Recherche Wikipédia dans le domaine %s avec la requête '%s'.", domaine, requete)
     url_search = f"https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(requete)}&utf8=&format=json"
 
@@ -443,7 +449,7 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                 return None
             
             titres_a_tester = list(dict.fromkeys(
-                [requete] + [resultat.get('title', '') for resultat in resultats]
+                resultat.get('title', '') for resultat in resultats
             ))
             resultats_a_tester = [{'title': titre} for titre in titres_a_tester if titre][:6]
 
