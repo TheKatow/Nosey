@@ -21,6 +21,9 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Installer les dépendances Python
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
       - name: Exécution avec 3 tentatives (espacées d'une heure)
         id: processus_recuperation
         env:
