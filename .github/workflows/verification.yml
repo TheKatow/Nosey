@@ -28,14 +28,53 @@ jobs:
         run: python scripts/generateur_candidates.py
 
       - name: Exécuter le moteur de vérification et envoyer le récapitulatif Ntfy
-        run: python scripts/moteur_verification.py
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          def compter_fiches_valides():
+              if not os.path.exists('data/fiches.json'):
+                  return 0
+              try:
+                  with open('data/fiches.json', 'r', encoding='utf-8') as f:
+                      fiches = json.load(f)
+                  return len(fiches) if isinstance(fiches, list) else 0
+              except Exception:
+                  return 0
+
+          fiches_avant = compter_fiches_valides()
+          print(f"📌 Avant vérification : {fiches_avant} fiche(s) valide(s) détectée(s).")
+
+          # Exécution réelle du moteur de vérification
+          import subprocess
+          result = subprocess.run(["python", "scripts/moteur_verification.py"], check=False)
+
+          fiches_apres = compter_fiches_valides()
+          nouvelles_fiches = max(fiches_apres - fiches_avant, 0)
+
+          print(f"📌 Après vérification : {fiches_apres} fiche(s) valide(s).")
+          print(f"📌 Résumé : {nouvelles_fiches} fiche(s) ajoutée(s) / retrouvée(s) dans cette vérification.")
+
+          if os.environ.get('GITHUB_STEP_SUMMARY'):
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+                  summary.write("### Résumé de la vérification Nosey\n")
+                  if nouvelles_fiches > 0:
+                      summary.write(f"- ✅ {nouvelles_fiches} fiche(s) ajoutée(s) ou retrouvée(s).\n")
+                  else:
+                      summary.write("- ℹ️ Aucune nouvelle fiche ajoutée durant cette vérification.\n")
+                  summary.write(f"- Total final : {fiches_apres} fiche(s) valide(s).\n\n")
+
+          if result.returncode != 0:
+              print(f"⚠️ Le moteur de vérification a échoué avec le code {result.returncode}.")
+              raise SystemExit(result.returncode)
+          PY
 
       - name: Enregistrer les modifications dans le dépôt
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Vérification s'il y a des fichiers modifiés
+
           if [ -n "$(git status --porcelain data/)" ]; then
             git add data/fiches.json data/candidates.json
             git commit -m "auto: mise a jour du pipeline Nosey"
