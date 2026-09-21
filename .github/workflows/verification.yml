@@ -1,9 +1,9 @@
 name: Executer la verification Nosey
 
 on:
-  schedule:
-    # Exécution automatique tous les jours à 08:00 UTC
-    - cron: '0 8 * * *'
+  workflow_run:
+    workflows: ["Routine quotidienne Nosey"]
+    types: [completed]
   # Permet de lancer le workflow manuellement depuis l'onglet Actions sur GitHub
   workflow_dispatch:
 
@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   run-nosey-pipeline:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -29,7 +30,27 @@ jobs:
       - name: Installer les dépendances Python
         run: python -m pip install --upgrade pip && pip install -r requirements.txt
 
+      - name: Vérifier la présence de candidates
+        id: presence_candidates
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          try:
+              with open('data/candidates.json', 'r', encoding='utf-8') as f:
+                  candidates = json.load(f)
+          except (FileNotFoundError, json.JSONDecodeError):
+              candidates = []
+
+          presente = isinstance(candidates, list) and len(candidates) > 0
+          print(f"📌 Candidates disponibles : {len(candidates) if isinstance(candidates, list) else 0}.")
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f"present={str(presente).lower()}\n")
+          PY
+
       - name: Vérification des articles et sources fiables
+        if: steps.presence_candidates.outputs.present == 'true'
         run: |
           python - <<'PY'
           import json
