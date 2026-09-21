@@ -156,6 +156,65 @@ def charger_sujets_fiches_existantes():
     sujets.update({normaliser_sujet(s) for s in blacklist if isinstance(s, str)})
     return sujets
 
+def extraire_fait_depuis_wikipedia(sujet, extract_texte):
+    """Construit un fait court depuis Wikipédia quand Gemini est limité."""
+    texte = ' '.join(str(extract_texte or '').split())
+    if len(texte) < 180:
+        logger.info(
+            "Résumé Wikipédia trop court pour '%s' (%d caractères).",
+            sujet,
+            len(texte)
+        )
+        return ""
+
+    phrases = [
+        phrase.strip()
+        for phrase in re.split(r'(?<=[.!?])\s+', texte)
+        if phrase.strip()
+    ]
+    phrases_factuelles = [
+        phrase for phrase in phrases
+        if re.search(r'\d', phrase)
+        and len(re.findall(r"[A-Za-zÀ-ÿ]+", phrase)) >= 8
+    ]
+    phrases_localisees = [
+        phrase for phrase in phrases
+        if re.search(
+            r"\b(?:en|à|au|aux|dans|sur|près de|originaire de)\s+"
+            r"[A-ZÀ-ÖØ-Ý][\wÀ-ÿ'-]*",
+            phrase
+        )
+    ]
+
+    selection = []
+    for phrase in phrases_factuelles + phrases_localisees:
+        if phrase not in selection:
+            selection.append(phrase)
+        if len(selection) == 2:
+            break
+
+    phrase_localisee = next(
+        (phrase for phrase in phrases_localisees if phrase in selection),
+        None
+    )
+    if phrase_localisee is None and phrases_localisees:
+        selection[-1] = phrases_localisees[0]
+
+    if not selection:
+        logger.info("Aucun fait chiffré exploitable dans Wikipédia pour '%s'.", sujet)
+        return ""
+
+    fait = ' '.join(selection)
+    mots = fait.split()
+    if len(mots) > 80:
+        fait = ' '.join(mots[:80]).rstrip(' ,;:') + '.'
+
+    if not re.search(r'\d', fait) or not extraire_localisation(fait):
+        logger.info("Fait Wikipédia insuffisant pour '%s'.", sujet)
+        return ""
+
+    return fait
+
 def sommer_article_en_fait(sujet, extract_texte):
     """Utilise Gemini pour transformer un extrait Wikipédia en un fait marquant."""
     if not extract_texte or len(extract_texte.strip()) < 50:
@@ -214,7 +273,11 @@ Formate la réponse sous forme de texte brut sans guillemets ni puces.
 
         return resultat
     except LimitationReseau:
-        raise
+        logger.warning(
+            "Quota Gemini épuisé pour '%s' ; utilisation du résumé Wikipédia.",
+            sujet
+        )
+        return extraire_fait_depuis_wikipedia(sujet, extract_texte)
     except Exception as erreur:
         logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
         return ""
