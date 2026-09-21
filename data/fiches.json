@@ -123,5 +123,31 @@
       "passer": "📏",
       "positif": "👑"
     }
+  },
+  {
+    "id": "Q1049644",
+    "sujet": "Piton de la Fournaise",
+    "domaine": "PHENOMENES_NATURELS",
+    "theme": "Découverte GEOGRAPHIE",
+    "fait_texte": "Culminant à 2 621 mètres d'altitude dans l'océan Indien, le Piton de la Fournaise est le volcan actif de l'île de La Réunion. Ce volcan bouclier impressionnant constitue à lui seul 40 % du territoire de l'île dans sa partie sud-est.",
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Piton_de_la_Fournaise",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Piton_de_la_Fournaise"
+      },
+      {
+        "nom": "CNRS",
+        "url": "http://www.insu.cnrs.fr/node/9599",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "l'océan Indien",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Piton_de_La_Fournaise_-_Paysage_de_l%27%C3%AEle_de_La_R%C3%A9union.jpg/330px-Piton_de_La_Fournaise_-_Paysage_de_l%27%C3%AEle_de_La_R%C3%A9union.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "🌋",
+      "passer": "🌪️"
+    }
   }
 ]
