@@ -462,8 +462,8 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
     return None, None
 
 def main():
-    logger.info("Génération des candidates Nosey...")
-    
+    logger.info("Recherche d'articles extraordinaires pour Nosey...")
+
     sujets_fiches = charger_sujets_fiches_existantes()
     candidates_existantes = charger_json(CANDIDATES_FILE)
     sources_fiables = charger_json(SOURCES_FIABLES_FILE)

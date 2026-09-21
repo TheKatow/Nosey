@@ -146,6 +146,15 @@ def valider_fiche(fiche):
     if len(urls_sources) < 2:
         return False, "Moins de deux sources distinctes"
 
+    sources_secondaires = [
+        source for source in sources
+        if isinstance(source, dict)
+        and source.get('url')
+        and source.get('url') != fiche.get('source_url')
+    ]
+    if not sources_secondaires:
+        return False, "Aucune seconde source fiable détectée"
+
     valide_contexte, raison_contexte = verifier_valeur_ajoutee_et_contexte(fiche)
     if not valide_contexte:
         return False, raison_contexte
