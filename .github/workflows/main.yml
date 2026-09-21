@@ -54,7 +54,14 @@ jobs:
 
           for essai in range(1, MAX_TENTATIVES + 1):
               print(f"🔄 Tentative {essai}/{MAX_TENTATIVES} pour trouver un article extraordinaire...")
-              subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
+              resultat = subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
+
+              if resultat.returncode == 75:
+                print("⏸️ API limitée (429) : aucun autre appel ne sera lancé pendant cette tentative.")
+                if essai < MAX_TENTATIVES:
+                  print("⏳ Nouvelle tentative dans 1 heure...")
+                  time.sleep(ATTENTE_SECONDES)
+                continue
 
               candidates_actuelles = compter_candidates()
               nouvelles_candidates = max(candidates_actuelles - candidates_avant, 0)

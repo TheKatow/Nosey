@@ -273,11 +273,7 @@ Formate la réponse sous forme de texte brut sans guillemets ni puces.
 
         return resultat
     except LimitationReseau:
-        logger.warning(
-            "Quota Gemini épuisé pour '%s' ; utilisation du résumé Wikipédia.",
-            sujet
-        )
-        return extraire_fait_depuis_wikipedia(sujet, extract_texte)
+        raise
     except Exception as erreur:
         logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
         return ""
@@ -569,7 +565,7 @@ def main():
         )
     except LimitationReseau as erreur:
         logger.warning("%s. Sujet reporté : '%s'.", erreur, sujet_recherche)
-        return
+        return 75
 
     if fiche:
         historique_recherches.append({'categorie': nom_categorie, 'sujet': sujet_recherche})
@@ -586,4 +582,4 @@ def main():
         logger.info("%d nouvelle candidate enregistrée.", ajouts)
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main() or 0)
