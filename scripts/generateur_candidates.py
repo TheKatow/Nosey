@@ -535,6 +535,7 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
     return None
 
 def choisir_sujet_dynamique(categories, historique, sujets_exclus):
+    """Choisit un terme de recherche parmi les catégories configurées en dur."""
     sujets_deja_recherches = {
         normaliser_sujet(entree.get('sujet'))
         for entree in historique
@@ -542,35 +543,14 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
     }
     sujets_exclus = sujets_exclus | sujets_deja_recherches
 
-    categories_melangees = random.sample(categories, len(categories))
-    for categorie in categories_melangees:
-        nom_categorie = categorie.get('categorie_wikipedia')
-        if not nom_categorie:
-            continue
-
-        parametres = urllib.parse.urlencode({
-            'action': 'query',
-            'list': 'categorymembers',
-            'cmtitle': f'Catégorie:{nom_categorie}',
-            'cmnamespace': '0',
-            'cmlimit': '50',
-            'format': 'json'
-        })
-        url = f'https://fr.wikipedia.org/w/api.php?{parametres}'
-
-        try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'NoseyBot/1.0'})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                donnees = json.loads(resp.read().decode('utf-8'))
-            articles = donnees.get('query', {}).get('categorymembers', [])
-            articles = [
-                article for article in articles
-                if normaliser_sujet(article.get('title')) not in sujets_exclus
-            ]
-            if articles:
-                return categorie, random.choice(articles)['title']
-        except Exception as erreur:
-            logger.warning("Catégorie Wikipédia inaccessible (%s) : %s", nom_categorie, erreur)
+    categories_disponibles = [
+        categorie for categorie in categories
+        if categorie.get('categorie_wikipedia')
+        and normaliser_sujet(categorie['categorie_wikipedia']) not in sujets_exclus
+    ]
+    if categories_disponibles:
+        categorie = random.choice(categories_disponibles)
+        return categorie, categorie['categorie_wikipedia']
 
     return None, None
 
