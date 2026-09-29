@@ -55,6 +55,13 @@ MOTS_CLES_RECORD = [
     'mètre', 'seconde', 'minute', 'heure', '%'
 ]
 
+CATEGORIES_WIKIPEDIA_REMARQUABLES = [
+    'record', 'remarquable', 'exceptionnel', 'extrême', 'extrêmophile',
+    'anomalie', 'superlatif', 'atypique', 'insolite', 'rare', 'plus grand',
+    'plus haut', 'plus profond', 'plus ancien', 'plus rapide', 'hors norme',
+    'sans nom commun'
+]
+
 EMOJIS_PAR_DOMAINE = {
     'animal': {'positif': '🐾', 'passer': '🍂'},
     'biologie': {'positif': '🧬', 'passer': '🍃'},
@@ -287,7 +294,7 @@ def extraire_localisation(fait_texte):
     )
     return correspondance.group(1).strip() if correspondance else ''
 
-def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="Découverte", fait_texte=None):
+def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="Découverte", fait_texte=None, categories_wikipedia=None):
     sujet = data_wiki.get('title', '').strip()
     if fait_texte is None:
         fait_texte = sommer_article_en_fait(sujet, data_wiki.get('extract', ''))
@@ -308,6 +315,7 @@ def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="
         "domaine": domaine,
         "theme": theme,
         "fait_texte": fait_texte,
+        "categories_wikipedia": categories_wikipedia or [],
         "source_nom": "Wikipédia",
         "source_url": source_url,
         "sources": [
@@ -319,10 +327,45 @@ def structurer_fiche(data_wiki, source_secondaire, domaine="CURIOSITÉ", theme="
         "emojis": choisir_emojis(domaine)
     }
 
-def fait_remarquable(fait_texte, domaine):
+def categories_indiquent_fait_remarquable(categories):
+    for categorie in categories:
+        titre = categorie.get('title', '') if isinstance(categorie, dict) else categorie
+        nom = str(titre).lower().replace('catégorie:', '').replace('_', ' ')
+        if any(marqueur in nom for marqueur in CATEGORIES_WIKIPEDIA_REMARQUABLES):
+            return True
+    return False
+
+def recuperer_categories_wikipedia(titre):
+    parametres = urllib.parse.urlencode({
+        'action': 'query',
+        'prop': 'categories',
+        'titles': titre,
+        'cllimit': 'max',
+        'format': 'json'
+    })
+    url = f'https://fr.wikipedia.org/w/api.php?{parametres}'
+    req = urllib.request.Request(url, headers={'User-Agent': 'NoseyBot/1.0'})
+
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            donnees = json.loads(resp.read().decode('utf-8'))
+        pages = donnees.get('query', {}).get('pages', {}).values()
+        return next((page.get('categories', []) for page in pages), [])
+    except urllib.error.HTTPError as erreur:
+        if erreur.code == 429:
+            raise LimitationReseau(f"Wikipédia limite la recherche de catégories pour '{titre}'") from erreur
+        logger.warning("Catégories Wikipédia indisponibles pour '%s' : %s", titre, erreur)
+    except Exception as erreur:
+        logger.warning("Catégories Wikipédia indisponibles pour '%s' : %s", titre, erreur)
+    return []
+
+def fait_remarquable(fait_texte, domaine, categories_wikipedia=None):
     texte = normaliser_sujet(fait_texte)
     if not texte:
         return False
+
+    if categories_indiquent_fait_remarquable(categories_wikipedia or []):
+        return True
 
     phrases_generiques = (
         'est une espece de',
@@ -464,7 +507,11 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                     continue
 
                 fait_texte = sommer_article_en_fait(titre, data_summary.get('extract', ''))
-                if not fait_texte or not fait_remarquable(fait_texte, domaine):
+                if not fait_texte:
+                    continue
+
+                categories_wikipedia = recuperer_categories_wikipedia(titre)
+                if not fait_remarquable(fait_texte, domaine, categories_wikipedia):
                     continue
 
                 source_secondaire = chercher_source_secondaire(titre, fait_texte, sources_fiables)
@@ -475,7 +522,8 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
                         source_secondaire,
                         domaine=domaine,
                         theme=theme,
-                        fait_texte=fait_texte
+                        fait_texte=fait_texte,
+                        categories_wikipedia=categories_wikipedia
                     )
 
             return None

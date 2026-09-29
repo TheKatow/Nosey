@@ -50,33 +50,62 @@ jobs:
           PY
 
       - name: Vérification des articles et sources fiables
+        id: verification_fiches
         if: steps.presence_candidates.outputs.present == 'true'
         run: |
           python - <<'PY'
           import json
           import os
+          import uuid
 
-          def compter_fiches_valides():
+          def charger_fiches():
               if not os.path.exists('data/fiches.json'):
-                  return 0
+                  return []
               try:
                   with open('data/fiches.json', 'r', encoding='utf-8') as f:
                       fiches = json.load(f)
-                  return len(fiches) if isinstance(fiches, list) else 0
+                  return fiches if isinstance(fiches, list) else []
               except Exception:
-                  return 0
+                  return []
 
-          fiches_avant = compter_fiches_valides()
-          print(f"📌 Avant vérification : {fiches_avant} fiche(s) valide(s) détectée(s).")
+          fiches_avant = charger_fiches()
+          ids_avant = {fiche.get('id') for fiche in fiches_avant if fiche.get('id')}
+          print(f"📌 Avant vérification : {len(fiches_avant)} fiche(s) valide(s) détectée(s).")
 
           import subprocess
           result = subprocess.run(["python", "scripts/moteur_verification.py"], check=False)
 
-          fiches_apres = compter_fiches_valides()
-          nouvelles_fiches = max(fiches_apres - fiches_avant, 0)
+          fiches_apres = charger_fiches()
+          fiches_creees = [
+              fiche for fiche in fiches_apres
+              if fiche.get('id') and fiche.get('id') not in ids_avant
+          ]
+          nouvelles_fiches = len(fiches_creees)
 
-          print(f"📌 Après vérification : {fiches_apres} fiche(s) valide(s).")
+          print(f"📌 Après vérification : {len(fiches_apres)} fiche(s) valide(s).")
           print(f"📌 Résumé : {nouvelles_fiches} fiche(s) ajoutée(s) / retrouvée(s) dans cette vérification.")
+
+          details_fiches = []
+          for fiche in fiches_creees:
+              sujet = fiche.get('sujet') or 'Sujet non renseigné'
+              domaine = fiche.get('domaine') or 'Domaine non renseigné'
+              theme = fiche.get('theme') or 'Thème non renseigné'
+              fait = fiche.get('fait_texte') or 'Fait non renseigné'
+              localisation = fiche.get('localisation') or 'Lieu non renseigné'
+              source_nom = fiche.get('source_nom') or 'Source non renseignée'
+              source_url = fiche.get('source_url') or ''
+              source = f"{source_nom} ({source_url})" if source_url else source_nom
+              details_fiches.append(
+                  f"Sujet : {sujet}\nDomaine / thème : {domaine} / {theme}\n"
+                  f"Fait : {fait}\nLieu : {localisation}\nSource : {source}"
+              )
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f"count={nouvelles_fiches}\n")
+              delimiter = f"FICHES_{uuid.uuid4().hex}"
+              output.write(f"details<<{delimiter}\n")
+              output.write("\n\n---\n\n".join(details_fiches) + "\n")
+              output.write(f"{delimiter}\n")
 
           if os.environ.get('GITHUB_STEP_SUMMARY'):
               with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
@@ -85,12 +114,25 @@ jobs:
                       summary.write(f"- ✅ {nouvelles_fiches} fiche(s) validée(s) et ajoutée(s) à la base.\n")
                   else:
                       summary.write("- ℹ️ Aucune nouvelle fiche validée. Les candidats existants ne remplissent pas les critères de qualité.\n")
-                  summary.write(f"- Total final : {fiches_apres} fiche(s) valide(s).\n\n")
+                  summary.write(f"- Total final : {len(fiches_apres)} fiche(s) valide(s).\n\n")
 
           if result.returncode != 0:
               print(f"⚠️ Le moteur de vérification a échoué avec le code {result.returncode}.")
               raise SystemExit(result.returncode)
           PY
+
+      - name: Notifier les nouvelles fiches sur ntfy
+        if: steps.presence_candidates.outputs.present == 'true' && steps.verification_fiches.outputs.count != '0'
+        env:
+          MESSAGE: ${{ steps.verification_fiches.outputs.details }}
+          FICHES_COUNT: ${{ steps.verification_fiches.outputs.count }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Title: Nosey : ${FICHES_COUNT} nouvelle(s) fiche(s)" \
+            -H "Priority: default" \
+            -H "Tags: nosey,bookmark" \
+            -d "$MESSAGE" \
+            https://ntfy.sh/Nosey
 
       - name: Enregistrer les modifications dans le dépôt
         run: |
