@@ -222,68 +222,81 @@ def extraire_fait_depuis_wikipedia(sujet, extract_texte):
 
     return fait
 
-def sommer_article_en_fait(sujet, extract_texte):
-    """Utilise Gemini pour transformer un extrait Wikipédia en un fait marquant."""
-    if not extract_texte or len(extract_texte.strip()) < 50:
-        return ""
+def sommer_articles_en_faits(articles):
+    """Résume plusieurs extraits en un seul appel Gemini, indexé par article."""
+    articles_exploitables = [
+        article for article in articles
+        if len(str(article.get('extract', '')).strip()) >= 50
+    ]
+    if not articles_exploitables:
+        return {}
 
+    extraits = '\n\n'.join(
+        f"[{index}] {article['title']}\n{article['extract']}"
+        for index, article in enumerate(articles_exploitables, start=1)
+    )
     prompt = f"""
-Tu es l'éditeur de l'application Nosey. Résume l'article Wikipédia sur « {sujet} » en 2 ou 3 phrases.
+Tu es l'éditeur de l'application Nosey. Pour chaque extrait Wikipédia numéroté ci-dessous, écris un fait marquant.
 
-Extrait source :
-{extract_texte}
+{extraits}
 
-Consignes strictes :
-1. Rédige un fait captivant de 15 à 80 mots maximum qui se termine par un point.
-2. Le fait DOIT obligatoirement contenir :
-   - Une donnée chiffrée (avec mesure, quantité ou date).
-   - Un exemple d'usage, de réalisation, d'effet ou de particularité unique.
-   - Une localisation explicite (pays, ville, région ou milieu naturel).
-3. INTERDICTION ABSOLUE des phrases d'introduction vagues ou génériques (ex: "X peut être déterminé selon divers critères...").
-4. Si l'extrait ne contient aucun fait précis ou exemple concret, réponds exactement "INVALIDE".
+Consignes strictes pour chaque fait :
+1. 15 à 80 mots, terminé par un point.
+2. Contenir une donnée chiffrée, un exemple concret et une localisation explicite.
+3. Écarter les phrases vagues ou génériques.
+4. Si l'extrait ne permet pas un fait précis, sa valeur est "INVALIDE".
 
-Formate la réponse sous forme de texte brut sans guillemets ni puces.
+Réponds uniquement avec un objet JSON dont les clés sont les numéros entre guillemets et les valeurs les faits. Ne mélange pas les articles.
 """
 
-    try:
-        response = None
-        for tentative in range(3):
-            try:
-                response = client.models.generate_content(
-                    model=MODELE_GEMINI,
-                    contents=prompt,
-                    config=CONFIG_GEMINI_SANS_AFC,
+    for tentative in range(3):
+        try:
+            response = client.models.generate_content(
+                model=MODELE_GEMINI,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                        disable=True
+                    ),
+                    response_mime_type='application/json',
+                ),
+            )
+            resultats = json.loads(response.text)
+            if not isinstance(resultats, dict):
+                raise ValueError("La réponse Gemini n'est pas un objet JSON.")
+            faits = {}
+            for index, article in enumerate(articles_exploitables, start=1):
+                fait = resultats.get(str(index), '')
+                if isinstance(fait, str) and not re.fullmatch(
+                    r'INVALIDE[.!]?', fait.strip(), re.IGNORECASE
+                ):
+                    faits[article['title']] = fait.strip()
+            return faits
+        except Exception as erreur:
+            erreur_texte = str(erreur)
+            if '429' in erreur_texte or 'RESOURCE_EXHAUSTED' in erreur_texte:
+                logger.warning(
+                    "Quota Gemini atteint pour le lot de %d articles; "
+                    "l'extraction Wikipédia locale sera utilisée.",
+                    len(articles_exploitables)
                 )
-                break
-            except Exception as erreur:
-                erreur_texte = str(erreur)
-                quota_epuise = '429' in erreur_texte or 'RESOURCE_EXHAUSTED' in erreur_texte
-                if quota_epuise:
-                    raise LimitationReseau(
-                        "Quota Gemini épuisé. Attendez le renouvellement du quota "
-                        "ou utilisez un projet avec facturation activée."
-                    ) from erreur
-                est_indisponible = '503' in erreur_texte or 'UNAVAILABLE' in erreur_texte
-                if not est_indisponible or tentative == 2:
-                    raise
-                delai = 2 ** tentative
-                logger.warning("Gemini indisponible pour '%s' ; tentative dans %d s.", sujet, delai)
-                time.sleep(delai)
+                return {}
+            est_indisponible = '503' in erreur_texte or 'UNAVAILABLE' in erreur_texte
+            if not est_indisponible or tentative == 2:
+                logger.warning("Échec du résumé Gemini par lot : %s", erreur)
+                return {}
+            delai = 2 ** tentative
+            logger.warning("Gemini indisponible; nouvelle tentative dans %d s.", delai)
+            time.sleep(delai)
+    return {}
 
-        if not response:
-            return ""
-
-        resultat = response.text.strip()
-        if re.fullmatch(r'INVALIDE[.!]?', resultat, re.IGNORECASE):
-            logger.info("Gemini a rejeté l'extrait de '%s' : fait insuffisant.", sujet)
-            return ""
-
-        return resultat
-    except LimitationReseau:
-        raise
-    except Exception as erreur:
-        logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
-        return ""
+def sommer_article_en_fait(sujet, extract_texte):
+    """Conserve le traitement unitaire utilisé par structurer_fiche."""
+    faits = sommer_articles_en_faits([{
+        'title': sujet,
+        'extract': extract_texte
+    }])
+    return faits.get(sujet) or extraire_fait_depuis_wikipedia(sujet, extract_texte)
 
 def extraire_localisation(fait_texte):
     correspondance = re.search(
@@ -384,31 +397,34 @@ def fait_remarquable(fait_texte, domaine, categories_wikipedia=None):
 
     return any(mot in texte for mot in MOTS_CLES_VALEUR) or bool(re.search(r'\d', texte))
 
-def chercher_source_secondaire(sujet, fait_texte, sources_fiables):
+def chercher_source_secondaire(sujet, fait_texte, sources_fiables, liens_externes=None):
     mots_fait = {mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)}
     logger.info("Seconde source pour '%s' : %d mots-clés.", sujet, len(mots_fait))
 
     try:
-        parametres = urllib.parse.urlencode({
-            'action': 'query',
-            'prop': 'extlinks',
-            'titles': sujet,
-            'ellimit': 'max',
-            'format': 'json'
-        })
-        url_wikipedia = f'https://fr.wikipedia.org/w/api.php?{parametres}'
-        req = urllib.request.Request(url_wikipedia, headers={'User-Agent': 'NoseyBot/1.0'})
-        try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                donnees = json.loads(resp.read().decode('utf-8'))
-        except urllib.error.HTTPError as erreur:
-            if erreur.code == 429:
-                raise LimitationReseau(f"Wikipédia limite la recherche de '{sujet}'") from erreur
-            raise
+        if liens_externes is None:
+            parametres = urllib.parse.urlencode({
+                'action': 'query',
+                'prop': 'extlinks',
+                'titles': sujet,
+                'ellimit': 'max',
+                'format': 'json'
+            })
+            url_wikipedia = f'https://fr.wikipedia.org/w/api.php?{parametres}'
+            req = urllib.request.Request(url_wikipedia, headers={'User-Agent': 'NoseyBot/1.0'})
+            try:
+                with urllib.request.urlopen(req, timeout=8) as resp:
+                    donnees = json.loads(resp.read().decode('utf-8'))
+            except urllib.error.HTTPError as erreur:
+                if erreur.code == 429:
+                    raise LimitationReseau(f"Wikipédia limite la recherche de '{sujet}'") from erreur
+                raise
 
-        liens_externes = []
-        for page in donnees.get('query', {}).get('pages', {}).values():
-            liens_externes.extend(lien.get('*', '') for lien in page.get('extlinks', []))
+            liens_externes = [
+                lien.get('*', '')
+                for page in donnees.get('query', {}).get('pages', {}).values()
+                for lien in page.get('extlinks', [])
+            ]
 
         for source in sources_fiables:
             domaines = source.get('domaines', [])
@@ -472,6 +488,56 @@ def construire_requete_remarquable(sujet):
     qualificatifs = 'exceptionnel OR extraordinaire OR remarquable OR rare'
     return f'{sujet} ({qualificatifs})'
 
+def recuperer_pages_wikipedia(titres):
+    """Récupère les extraits et liens externes de plusieurs pages en un appel."""
+    parametres = urllib.parse.urlencode({
+        'action': 'query',
+        'prop': 'extracts|pageimages|info|pageprops|extlinks|categories',
+        'titles': '|'.join(titres),
+        'exintro': '1',
+        'explaintext': '1',
+        'exchars': '3500',
+        'piprop': 'thumbnail',
+        'pithumbsize': '600',
+        'inprop': 'url',
+        'ellimit': 'max',
+        'cllimit': 'max',
+        'redirects': '1',
+        'format': 'json'
+    })
+    url_wikipedia = f'https://fr.wikipedia.org/w/api.php?{parametres}'
+    req = urllib.request.Request(url_wikipedia, headers={'User-Agent': 'NoseyBot/1.0'})
+    try:
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            donnees = json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as erreur:
+        if erreur.code == 429:
+            raise LimitationReseau("Wikipédia limite la récupération du lot de pages") from erreur
+        raise
+
+    pages_par_titre = {}
+    for page in donnees.get('query', {}).get('pages', {}).values():
+        titre = page.get('title', '')
+        if not titre or 'missing' in page:
+            continue
+        pages_par_titre[normaliser_sujet(titre)] = {
+            'title': titre,
+            'extract': page.get('extract', ''),
+            'content_urls': {'desktop': {'page': page.get('fullurl', '')}},
+            'thumbnail': page.get('thumbnail', {}),
+            'wikibase_item': page.get('pageprops', {}).get('wikibase_item'),
+            'extlinks': [
+                lien.get('*', '') for lien in page.get('extlinks', [])
+            ],
+            'categories_wikipedia': page.get('categories', [])
+        }
+
+    return [
+        pages_par_titre[normaliser_sujet(titre)]
+        for titre in titres
+        if normaliser_sujet(titre) in pages_par_titre
+    ]
+
 def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, theme):
     sujet = random.choice(requetes_recherche)
     requete = construire_requete_remarquable(sujet)
@@ -489,32 +555,33 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
             
             titres_a_tester = list(dict.fromkeys(
                 resultat.get('title', '') for resultat in resultats
-            ))
-            resultats_a_tester = [{'title': titre} for titre in titres_a_tester if titre][:6]
+                if resultat.get('title')
+            ))[:6]
+            articles = recuperer_pages_wikipedia(titres_a_tester)
+            faits_gemini = sommer_articles_en_faits(articles)
 
-            for choix in resultats_a_tester:
-                titre = choix['title']
-                titre_encode = urllib.parse.quote(titre.replace(" ", "_"))
-                url_summary = f"https://fr.wikipedia.org/api/rest_v1/page/summary/{titre_encode}"
-
-                req_sum = urllib.request.Request(url_summary, headers={'User-Agent': 'NoseyBot/1.0'})
-                try:
-                    with urllib.request.urlopen(req_sum, timeout=5) as resp_sum:
-                        data_summary = json.loads(resp_sum.read().decode('utf-8'))
-                except urllib.error.HTTPError as erreur:
-                    if erreur.code == 429:
-                        raise LimitationReseau(f"Wikipédia limite le résumé de '{titre}'") from erreur
-                    continue
-
-                fait_texte = sommer_article_en_fait(titre, data_summary.get('extract', ''))
+            for data_summary in articles:
+                titre = data_summary['title']
+                categories_wikipedia = data_summary.get('categories_wikipedia', [])
+                fait_texte = faits_gemini.get(titre, '')
                 if not fait_texte:
+                    fait_texte = extraire_fait_depuis_wikipedia(
+                        titre,
+                        data_summary.get('extract', '')
+                    )
+                if not fait_texte or not fait_remarquable(
+                    fait_texte,
+                    domaine,
+                    categories_wikipedia
+                ):
                     continue
 
-                categories_wikipedia = recuperer_categories_wikipedia(titre)
-                if not fait_remarquable(fait_texte, domaine, categories_wikipedia):
-                    continue
-
-                source_secondaire = chercher_source_secondaire(titre, fait_texte, sources_fiables)
+                source_secondaire = chercher_source_secondaire(
+                    titre,
+                    fait_texte,
+                    sources_fiables,
+                    liens_externes=data_summary.get('extlinks', [])
+                )
                 if source_secondaire:
                     logger.info("Article retenu : '%s'.", titre)
                     return structurer_fiche(
