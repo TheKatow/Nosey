@@ -34,23 +34,6 @@
     "date_generation": "2026-09-14"
   },
   {
-    "id": "NAT_2026091414263779",
-    "domaine": "NATURE",
-    "theme": "Minéral",
-    "sujet": "Saussurite",
-    "fait_texte": "La saussurite est un agrégat de minéraux formé par une altération hydrothermale de feldspath appelé saussuritisation. Elle apparaît comme très similaire à la zoïsite avec une couleur verte ou gris-vert et a été utilisée comme un substitut du jade.",
-    "image_url": "",
-    "localisation": "Monde",
-    "emojis": {
-      "positif": "🌿",
-      "passer": "🍂"
-    },
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Saussurite",
-    "statut": "VALIDE",
-    "date_generation": "2026-09-14"
-  },
-  {
     "id": "CUL_2026091414264163",
     "domaine": "CULTURE",
     "theme": "Tradition populaire",
@@ -148,32 +131,6 @@
     "emojis": {
       "positif": "🌋",
       "passer": "🌪️"
-    }
-  },
-  {
-    "id": "Q506449",
-    "sujet": "Jacques Tardi",
-    "domaine": "historique",
-    "theme": "Découverte HISTOIRE",
-    "fait_texte": "Né le 30 août 1946 à Valence, dans la Drôme, l'artiste français Jacques Tardi est un auteur de bande dessinée et un illustrateur libertaire renommé. Ses créations graphiques singulières ont marqué durablement le monde du neuvième art.",
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Jacques_Tardi",
-    "sources": [
-      {
-        "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Jacques_Tardi"
-      },
-      {
-        "nom": "CNRS",
-        "url": "https://dumas.ccsd.cnrs.fr/dumas-01933276",
-        "extrait": "Source externe référencée par Wikipédia."
-      }
-    ],
-    "localisation": "Valence",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Tardi-IMG_0181.JPG/330px-Tardi-IMG_0181.JPG?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "emojis": {
-      "positif": "📜",
-      "passer": "🕰️"
     }
   },
   {
