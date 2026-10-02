@@ -220,5 +220,117 @@
       "positif": "🌠",
       "passer": "🌑"
     }
+  },
+  {
+    "id": "Q11303",
+    "sujet": "Gratte-ciel",
+    "domaine": "ARCHITECTURE",
+    "theme": "Découverte INGENIERIE",
+    "fait_texte": "Selon la société allemande Emporis, un édifice doit mesurer au moins 100 mètres de hauteur pour être qualifié de gratte-ciel, excluant des structures comme la tour Eiffel construite en 1889.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en anglais"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en japonais"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de Wikipédia avec notice d'autorité"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en frison occidental"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article à référence nécessaire"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local différent sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Gratte-ciel"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases relatives aux beaux-arts"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des dictionnaires ou encyclopédies généralistes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1296"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1417"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P3219"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P3365"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P4342"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P8313"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P8406"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Architecture et urbanisme/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Bâtiment et travaux publics/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Gratte-ciel/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Technologies/Articles liés"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Gratte-ciel",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Gratte-ciel"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/technology/skyscraper",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "moins",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Taipei101.portrait.altonthompson.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "emojis": {
+      "positif": "🏗️",
+      "passer": "🏚️"
+    }
   }
 ]
