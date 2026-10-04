@@ -1,1 +1,110 @@
-[]
+[
+  {
+    "id": "Q3354990",
+    "sujet": "Épisode cévenol",
+    "domaine": "SUPERLATIFS",
+    "theme": "Découverte RECORDS",
+    "fait_texte": "Un épisode cévenol se déroule normalement sur plusieurs jours et donne en moyenne des quantités d'eau comprises entre 200 et 400 mm sans que cela revête un caractère exceptionnel pour ces régions montagneuses (plus rarement jusqu'à 600 ou 700 mm au cours d'épisodes vraiment intenses).",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références/Liste complète"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références depuis juillet 2011"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article à référence nécessaire"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Climat méditerranéen"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Cévennes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Géographie de l'Hérault"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Géographie de la Lozère"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Géographie du Gard"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Phénomène météorologique en France"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Pluie"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Europe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:France/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Maritime/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Massif central/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Mer/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Mer Méditerranée/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Météorologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Prévision des orages violents"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/%C3%89pisode_c%C3%A9venol",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/%C3%89pisode_c%C3%A9venol"
+      },
+      {
+        "nom": "CNRS",
+        "url": "http://www2.cnrs.fr/presse/communique/2755.htm",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "plusieurs jours et donne en",
+    "image_url": "",
+    "emojis": {
+      "positif": "👑",
+      "passer": "📏"
+    }
+  }
+]
