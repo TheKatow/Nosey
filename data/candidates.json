@@ -1,1 +1,78 @@
-[]
+[
+  {
+    "id": "Q3562741",
+    "sujet": "Volcans d'Auvergne",
+    "domaine": "PHENOMENES_NATURELS",
+    "theme": "Découverte NATURE",
+    "fait_texte": "En Auvergne, dans le Massif central en France, le volcanisme s'étend sur une période exceptionnellement large. Alors que les volcans les plus anciens datent de 65 millions d'années, la chaîne des Puys s'est formée il y a seulement 7 000 ans, voire moins.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Auvergne"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Auvergne/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Europe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:France/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géographie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Massif central/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Occitanie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Volcanisme/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Toponyme évoquant l'Auvergne"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Volcans_d%27Auvergne",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Volcans_d%27Auvergne"
+      },
+      {
+        "nom": "CNRS",
+        "url": "https://www.insu.cnrs.fr/fr/cnrsinfo/maciv-nodes-un-reseau-sismologique-exceptionnel-sur-les-volcans-du-massif-central",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "Auvergne",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Come_pariou.jpg/960px-Come_pariou.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "🌋",
+      "passer": "🌪️"
+    }
+  }
+]
