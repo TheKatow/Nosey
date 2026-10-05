@@ -1,13 +1,27 @@
-// Clé de stockage LocalStorage
-const CLE_HISTORIQUE_VUS = 'nosey_fiches_vues_ids';
 const CLE_BLACKLIST_SUJETS = 'nosey_blacklist_sujets';
 let fichesDisponibles = [];
 let ficheActuelle = null;
-let historiqueNavigation = [];
-let positionHistorique = -1;
+let indexFicheActuelle = -1;
 
 document.addEventListener('DOMContentLoaded', () => {
   chargerFicheDuJour();
+});
+
+document.addEventListener('keydown', evenement => {
+  if (
+    !(evenement.target instanceof Element)
+    || evenement.target.closest('button, a, input, textarea, select, [contenteditable="true"]')
+  ) {
+    return;
+  }
+
+  if (evenement.key === 'ArrowLeft') {
+    evenement.preventDefault();
+    afficherFichePrecedente();
+  } else if (evenement.key === 'ArrowRight') {
+    evenement.preventDefault();
+    afficherFicheSuivante();
+  }
 });
 
 window.addEventListener('storage', evenement => {
@@ -17,20 +31,7 @@ window.addEventListener('storage', evenement => {
 });
 
 /**
- * Mélange un tableau de manière équitable (Algorithme Fisher-Yates)
- */
-function melangerTableau(tableau) {
-  const arr = [...tableau];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-/**
- * Charge et affiche une fiche sans répétition jusqu'à épuisement du cycle.
- * La limite d'une fiche par jour est désactivée pour le moment.
+ * Charge les fiches dans l'ordre du fichier et affiche la première disponible.
  */
 async function chargerFicheDuJour() {
   try {
@@ -55,7 +56,9 @@ async function chargerFicheDuJour() {
       return;
     }
 
-    afficherFiche(choisirProchaineFiche());
+    indexFicheActuelle = 0;
+    ficheActuelle = fichesDisponibles[indexFicheActuelle];
+    afficherFiche(ficheActuelle);
 
   } catch (erreur) {
     console.error("Erreur lors du chargement des fiches :", erreur);
@@ -78,62 +81,26 @@ function obtenirBlacklistLocale() {
 
 function appliquerBlacklistLocale() {
   const sujetsBlacklistes = new Set(obtenirBlacklistLocale().map(normaliserSujet));
-  const ficheSupprimee = ficheActuelle && sujetsBlacklistes.has(normaliserSujet(ficheActuelle.sujet));
+  const indexPrecedent = indexFicheActuelle;
+  const ficheActuelleEstBlacklistee = ficheActuelle
+    && sujetsBlacklistes.has(normaliserSujet(ficheActuelle.sujet));
   fichesDisponibles = fichesDisponibles.filter(fiche => !sujetsBlacklistes.has(normaliserSujet(fiche.sujet)));
-
-  if (!ficheSupprimee) return;
 
   if (fichesDisponibles.length === 0) {
     ficheActuelle = null;
+    indexFicheActuelle = -1;
     afficherErreur("Aucune curiosité disponible pour le moment.");
     return;
   }
 
-  afficherFiche(choisirProchaineFiche());
-}
-
-function obtenirVues() {
-  try {
-    const vues = JSON.parse(localStorage.getItem(CLE_HISTORIQUE_VUS) || '[]');
-    return Array.isArray(vues) ? vues.map(String) : [];
-  } catch (erreur) {
-    return [];
-  }
-}
-
-function identifiantFiche(fiche) {
-  return String(fiche.id || fiche.sujet);
-}
-
-function choisirProchaineFiche() {
-  const idsDisponibles = new Set(fichesDisponibles.map(identifiantFiche));
-  let vuesIds = obtenirVues().filter(id => idsDisponibles.has(id));
-  localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
-  let nonVues = fichesDisponibles.filter(fiche => !vuesIds.includes(identifiantFiche(fiche)));
-
-  if (nonVues.length === 0) {
-    vuesIds = [];
-    localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
-    nonVues = fichesDisponibles;
-  }
-
-  const fiche = melangerTableau(nonVues)[0];
-  ficheActuelle = fiche;
-  enregistrerFicheVue(fiche);
-  historiqueNavigation = historiqueNavigation.slice(0, positionHistorique + 1);
-  historiqueNavigation.push(fiche);
-  positionHistorique = historiqueNavigation.length - 1;
-  return fiche;
-}
-
-function enregistrerFicheVue(fiche) {
-  const vuesIds = obtenirVues();
-  const id = identifiantFiche(fiche);
-
-  if (!vuesIds.includes(id)) {
-    vuesIds.push(id);
-    localStorage.setItem(CLE_HISTORIQUE_VUS, JSON.stringify(vuesIds));
-  }
+  const indexFicheToujoursDisponible = fichesDisponibles.findIndex(
+    fiche => fiche.id === ficheActuelle?.id && fiche.sujet === ficheActuelle?.sujet
+  );
+  indexFicheActuelle = ficheActuelleEstBlacklistee
+    ? Math.min(Math.max(indexPrecedent, 0), fichesDisponibles.length - 1)
+    : Math.max(indexFicheToujoursDisponible, 0);
+  ficheActuelle = fichesDisponibles[indexFicheActuelle];
+  afficherFiche(ficheActuelle);
 }
 
 /**
@@ -149,7 +116,7 @@ function afficherFiche(fiche) {
 
   carteContainer.innerHTML = `
     <div class="navigation-fiche">
-      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${positionHistorique <= 0 ? 'disabled' : ''}>&lt;</button>
+      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${indexFicheActuelle <= 0 ? 'disabled' : ''}>&lt;</button>
       <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
@@ -176,7 +143,7 @@ function afficherFiche(fiche) {
         </div>
       </footer>
       </article>
-      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante">&gt;</button>
+      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante" ${indexFicheActuelle >= fichesDisponibles.length - 1 ? 'disabled' : ''}>&gt;</button>
     </div>
   `;
 }
@@ -199,37 +166,17 @@ function reagir(ficheId, typeReaction) {
 }
 
 function afficherFicheSuivante() {
-  if (!ficheActuelle || fichesDisponibles.length === 0) return;
-
-  const carteElement = document.querySelector('.carte');
-  if (carteElement) {
-    carteElement.classList.add('carte-sortie');
-  }
-
-  setTimeout(() => {
-    if (positionHistorique < historiqueNavigation.length - 1) {
-      positionHistorique += 1;
-      ficheActuelle = historiqueNavigation[positionHistorique];
-      afficherFiche(ficheActuelle);
-      return;
-    }
-    afficherFiche(choisirProchaineFiche());
-  }, 250);
+  if (indexFicheActuelle >= fichesDisponibles.length - 1) return;
+  indexFicheActuelle += 1;
+  ficheActuelle = fichesDisponibles[indexFicheActuelle];
+  afficherFiche(ficheActuelle);
 }
 
 function afficherFichePrecedente() {
-  if (positionHistorique <= 0) return;
-
-  const carteElement = document.querySelector('.carte');
-  if (carteElement) {
-    carteElement.classList.add('carte-sortie');
-  }
-
-  setTimeout(() => {
-    positionHistorique -= 1;
-    ficheActuelle = historiqueNavigation[positionHistorique];
-    afficherFiche(ficheActuelle);
-  }, 250);
+  if (indexFicheActuelle <= 0) return;
+  indexFicheActuelle -= 1;
+  ficheActuelle = fichesDisponibles[indexFicheActuelle];
+  afficherFiche(ficheActuelle);
 }
 
 /**

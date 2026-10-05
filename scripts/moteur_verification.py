@@ -88,6 +88,21 @@ def verifier_url(url):
     except Exception:
         return False
 
+def verifier_texte_complet(texte):
+    if re.search(r"(?m)^\s*#{1,6}\s", texte):
+        return False, "Titre Markdown présent dans le fait"
+
+    derniere_phrase = re.split(r'(?<=[.!?])\s+', texte.strip())[-1]
+    if re.fullmatch(
+        r"En\s+\d{3,4},\s+(?:l['’]|le\s+|la\s+|les\s+|un\s+|une\s+|des\s+)"
+        r"[\wÀ-ÿ'-]+\s*[.!?]?",
+        derniere_phrase,
+        re.IGNORECASE
+    ):
+        return False, "Dernière phrase incomplète"
+
+    return True, "OK"
+
 def verifier_valeur_ajoutee_et_contexte(fiche):
     texte = fiche.get('fait_texte', '').strip()
     texte_lower = texte.lower()
@@ -127,6 +142,10 @@ def valider_fiche(fiche):
 
     if not texte.endswith(('.', '!', '?')):
         return False, "Absence de ponctuation finale"
+
+    texte_complet, raison_texte = verifier_texte_complet(texte)
+    if not texte_complet:
+        return False, raison_texte
 
     sources = fiche.get('sources', [])
     urls_sources = {

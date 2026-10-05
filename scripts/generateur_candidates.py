@@ -163,6 +163,14 @@ def charger_sujets_fiches_existantes():
     sujets.update({normaliser_sujet(s) for s in blacklist if isinstance(s, str)})
     return sujets
 
+def phrase_probablement_incomplete(phrase):
+    return bool(re.fullmatch(
+        r"En\s+\d{3,4},\s+(?:l['’]|le\s+|la\s+|les\s+|un\s+|une\s+|des\s+)"
+        r"[\wÀ-ÿ'-]+\s*[.!?]?",
+        phrase.strip(),
+        re.IGNORECASE
+    ))
+
 def extraire_fait_depuis_wikipedia(sujet, extract_texte):
     """Construit un fait court depuis Wikipédia quand Gemini est limité."""
     texte = ' '.join(str(extract_texte or '').split())
@@ -177,7 +185,7 @@ def extraire_fait_depuis_wikipedia(sujet, extract_texte):
     phrases = [
         phrase.strip()
         for phrase in re.split(r'(?<=[.!?])\s+', texte)
-        if phrase.strip()
+        if phrase.strip() and not phrase_probablement_incomplete(phrase)
     ]
     phrases_factuelles = [
         phrase for phrase in phrases
@@ -194,9 +202,12 @@ def extraire_fait_depuis_wikipedia(sujet, extract_texte):
     ]
 
     selection = []
+    nombre_mots = 0
     for phrase in phrases_factuelles + phrases_localisees:
-        if phrase not in selection:
+        nombre_mots_phrase = len(phrase.split())
+        if phrase not in selection and nombre_mots + nombre_mots_phrase <= 80:
             selection.append(phrase)
+            nombre_mots += nombre_mots_phrase
         if len(selection) == 2:
             break
 
@@ -205,16 +216,20 @@ def extraire_fait_depuis_wikipedia(sujet, extract_texte):
         None
     )
     if phrase_localisee is None and phrases_localisees:
-        selection[-1] = phrases_localisees[0]
+        phrase_localisee = next(
+            (phrase for phrase in phrases_localisees if len(phrase.split()) <= 80),
+            None
+        )
+        if phrase_localisee:
+            selection = selection[:-1] + [phrase_localisee] if selection else [phrase_localisee]
+            if len(' '.join(selection).split()) > 80:
+                selection = [phrase_localisee]
 
     if not selection:
         logger.info("Aucun fait chiffré exploitable dans Wikipédia pour '%s'.", sujet)
         return ""
 
     fait = ' '.join(selection)
-    mots = fait.split()
-    if len(mots) > 80:
-        fait = ' '.join(mots[:80]).rstrip(' ,;:') + '.'
 
     if not re.search(r'\d', fait) or not extraire_localisation(fait):
         logger.info("Fait Wikipédia insuffisant pour '%s'.", sujet)
@@ -236,17 +251,21 @@ def sommer_articles_en_faits(articles):
         for index, article in enumerate(articles_exploitables, start=1)
     )
     prompt = f"""
-Tu es l'éditeur de l'application Nosey. Pour chaque extrait Wikipédia numéroté ci-dessous, écris un fait marquant.
+Tu es l'éditeur de l'application Nosey. Pour chaque extrait Wikipédia numéroté ci-dessous, écris un fait marquant en expliquant ce qui le distingue de la situation habituelle.
 
 {extraits}
 
 Consignes strictes pour chaque fait :
-1. 15 à 80 mots, terminé par un point.
-2. Contenir une donnée chiffrée, un exemple concret et une localisation explicite.
-3. Écarter les phrases vagues ou génériques.
-4. Si l'extrait ne permet pas un fait précis, sa valeur est "INVALIDE".
+1. Écris un texte autonome de 15 à 80 mots, composé de phrases grammaticalement complètes et terminé par une phrase complète.
+2. Contenir une donnée ou un détail concret et une localisation explicite, tous deux étayés par l'extrait.
+3. Pour une mesure, préciser ce qui est mesuré et, si l'extrait le permet, la durée et le contexte de comparaison (valeur habituelle, fréquence, record ou autre référence).
+4. Distinguer clairement une valeur habituelle d'une valeur rare ou extrême. Une moyenne ou une caractéristique courante ne constitue pas, à elle seule, un fait exceptionnel. Si l'extrait oppose une situation habituelle à un cas rare, conserver cette opposition et ses nuances sans présenter le cas rare comme la norme ni comme un record non établi.
+5. Ne jamais inventer d'exemple, de comparaison, de fréquence, de record ou de localisation. Écarter les formulations vagues ou génériques.
+6. Ne pas recopier un titre ou une introduction biographique générale; raconter le fait distinctif précis, pas seulement présenter la personne ou le sujet.
+7. Ne jamais couper une phrase ni terminer sur un fragment, même si l'extrait source est tronqué. N'ajoute pas de point à une phrase inachevée pour la faire paraître complète.
+8. Sans fait réellement distinctif et précis ou si l'extrait est incomplet, la valeur est "INVALIDE".
 
-Réponds uniquement avec un objet JSON dont les clés sont les numéros entre guillemets et les valeurs les faits. Ne mélange pas les articles.
+Réponds uniquement avec un objet JSON dont les clés sont les numéros entre guillemets et les valeurs les faits, sans titre ni formatage Markdown. Ne mélange pas les articles.
 """
 
     for tentative in range(3):
@@ -395,7 +414,13 @@ def fait_remarquable(fait_texte, domaine, categories_wikipedia=None):
     if domaine.lower() == 'records':
         return any(mot in texte for mot in MOTS_CLES_RECORD)
 
-    return any(mot in texte for mot in MOTS_CLES_VALEUR) or bool(re.search(r'\d', texte))
+    contient_mesure = bool(re.search(
+        r'\b\d+(?:[,.]\d+)?\s*(?:%|\b(?:pour cent|km|kilometres?|metres?|cm|mm|'
+        r'ans?|siecles?|millenaires?|tonnes?|kg|kilos?|grammes?|millions?|'
+        r'milliards?|degres?|fois|secondes?|minutes?|heures?)\b)',
+        texte
+    ))
+    return any(mot in texte for mot in MOTS_CLES_VALEUR) or contient_mesure
 
 def chercher_source_secondaire(sujet, fait_texte, sources_fiables, liens_externes=None):
     mots_fait = {mot.lower() for mot in re.findall(r"[A-Za-zÀ-ÿ]{5,}", fait_texte)}
