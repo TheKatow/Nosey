@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "id": "Q50769",
+    "sujet": "Pyrite",
+    "domaine": "ARCHITECTURE",
+    "theme": "Découverte INGENIERIE",
+    "fait_texte": "La pyrite est une espèce minérale composée de disulfure de fer (FeS2), polymorphe de la marcassite ; elle contient généralement des traces de métaux précieux comme de l'argent (Ag) et de l'or (Au), ainsi que des traces de métaux lourds et métalloïdes toxiques nickel (Ni), cobalt (Co), arsenic (As), cuivre (Cu), zinc (Zn), thallium (Tl), sélénium (Se) et vanadium (V), et qui rendent son exploitation en tant que minerai très polluante.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en allemand"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant une Infobox"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Fer (minéral)"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Minéral cubique"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Minéral nommé d'après l'une de ses propriétés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Polymorphisme"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Chimie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Minéraux et roches/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Sulfure (minéral)"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Pyrite",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Pyrite"
+      },
+      {
+        "nom": "ScienceDirect",
+        "url": "https://www.sciencedirect.com/science/article/pii/S0304389419313329",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "tant que minerai très polluante",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Pyrite_-_Huanzala_mine%2C_Huallanca%2C_Bolognesi%2C_Ancash%2C_Peru.jpg/960px-Pyrite_-_Huanzala_mine%2C_Huallanca%2C_Bolognesi%2C_Ancash%2C_Peru.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "🏗️",
+      "passer": "🏚️"
+    }
+  }
+]
