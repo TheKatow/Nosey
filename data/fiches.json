@@ -812,5 +812,117 @@
       "positif": "🏗️",
       "passer": "🏚️"
     }
+  },
+  {
+    "id": "Q204324",
+    "sujet": "Lac de cratère",
+    "domaine": "PHENOMENES_NATURELS",
+    "theme": "Découverte GEOGRAPHIE",
+    "fait_texte": "C’est le lac le plus profond du pays, atteignant 594 mètres de profondeur... Le Crater Lake (portant en anglais le même nom que la formation géologique dont il est issu) dans l’Oregon aux États-Unis est sis au creux de la caldeira du mont Mazama.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en swahili"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références/Liste complète"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références depuis mai 2014"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local différent sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Lac de cratère"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des dictionnaires ou encyclopédies généralistes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1417"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant le modèle Autorité inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant un modèle Bases inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Eau/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géographie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Lacs et cours d'eau/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Montagne/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Volcanisme/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche lac"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche montagne"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche volcanisme"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Lac_de_crat%C3%A8re",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Lac_de_crat%C3%A8re"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/topic/crater-lake-geology",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "anglais le même nom que",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Crater_lake_oregon.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "emojis": {
+      "positif": "🌋",
+      "passer": "🌪️"
+    }
   }
 ]
