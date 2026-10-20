@@ -31,12 +31,10 @@ jobs:
         run: |
           python - << 'EOF'
           import subprocess
-          import time
           import json
           import os
 
           MAX_TENTATIVES = 3
-          ATTENTE_SECONDES = 3600 # 1 heure
           SUCCES = False
 
           def compter_candidates():
@@ -57,11 +55,14 @@ jobs:
               resultat = subprocess.run(["python", "scripts/generateur_candidates.py"], check=False)
 
               if resultat.returncode == 75:
-                print("⏸️ API limitée (429) : aucun autre appel ne sera lancé pendant cette tentative.")
-                if essai < MAX_TENTATIVES:
-                  print("⏳ Nouvelle tentative dans 1 heure...")
-                  time.sleep(ATTENTE_SECONDES)
-                continue
+                print("⏸️ API limitée (429) : arrêt des recherches pour éviter des appels répétés.")
+                if os.environ.get('GITHUB_STEP_SUMMARY'):
+                    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+                        summary.write("### Résumé de la routine Nosey\n")
+                        summary.write("- ⏸️ API limitée ; les appels sont arrêtés pour cette exécution.\n")
+                        summary.write(f"- Candidates conservées : {compter_candidates()}.\n\n")
+                SUCCES = True
+                break
 
               candidates_actuelles = compter_candidates()
               nouvelles_candidates = max(candidates_actuelles - candidates_avant, 0)
@@ -81,17 +82,14 @@ jobs:
                   break
               else:
                   print(f"⚠️ Aucune candidate extraordinaire trouvée ({candidates_actuelles}).")
-                  if essai < MAX_TENTATIVES:
-                      print("⏳ Attente de 1 heure avant la prochaine tentative...")
-                      time.sleep(ATTENTE_SECONDES)
 
           if not SUCCES:
               total_final = compter_candidates()
-              print(f"❌ Échec critique après 3 tentatives. Total final : {total_final} candidate(s) extraordinaire(s).")
+              print(f"❌ Échec après 3 recherches. Total final : {total_final} candidate(s) extraordinaire(s).")
               if os.environ.get('GITHUB_STEP_SUMMARY'):
                   with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
                       summary.write("### Résumé de la routine Nosey\n")
-                      summary.write("- ❌ Aucun article extraordinaire n'a été trouvé après 3 tentatives.\n")
+                      summary.write("- ❌ Aucun article extraordinaire n'a été trouvé après 3 recherches.\n")
                       summary.write(f"- Total final : {total_final} candidate(s).\n")
               exit(1)
           EOF
@@ -121,5 +119,5 @@ jobs:
             -H "Title: 🚨 Alerte Nosey : Échec de la collecte" \
             -H "Priority: high" \
             -H "Tags: warning,nosey" \
-            -d "Le workflow a échoué après 3 tentatives sur 3 heures. Moins de 2 fiches valides sont disponibles dans la base." \
+            -d "Le workflow n'a pas trouvé de nouvelle candidate après 3 recherches, ou l'API a été limitée. Vérifiez les journaux de l'exécution." \
             https://ntfy.sh/Nosey

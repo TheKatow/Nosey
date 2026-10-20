@@ -23,16 +23,21 @@ CATEGORIES_WIKIPEDIA_REMARQUABLES = [
 ]
 
 def charger_json(fichier):
-    if os.path.exists(fichier):
-        try:
-            with open(fichier, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            return []
-    return []
+    if not fichier or not os.path.exists(fichier):
+        return []
+
+    try:
+        with open(fichier, 'r', encoding='utf-8') as f:
+            donnees = json.load(f)
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return []
+
+    return donnees if isinstance(donnees, list) else []
 
 def sauvegarder_json(fichier, donnees):
-    os.makedirs(os.path.dirname(fichier), exist_ok=True)
+    dossier = os.path.dirname(fichier)
+    if dossier:
+        os.makedirs(dossier, exist_ok=True)
     with open(fichier, 'w', encoding='utf-8') as f:
         json.dump(donnees, f, ensure_ascii=False, indent=2)
 
@@ -52,6 +57,9 @@ def categories_indiquent_fait_remarquable(categories):
 
 def nettoyer_blacklist(candidates, fiches):
     """Retire les sujets blacklistés des fiches publiées et des candidates."""
+    candidates = candidates if isinstance(candidates, list) else []
+    fiches = fiches if isinstance(fiches, list) else []
+
     blacklist = charger_json(BLACKLIST_FILE)
     sujets_blacklistes = {
         normaliser_sujet(sujet)
@@ -64,11 +72,13 @@ def nettoyer_blacklist(candidates, fiches):
 
     candidates_filtrees = [
         candidate for candidate in candidates
-        if normaliser_sujet(candidate.get('sujet')) not in sujets_blacklistes
+        if not isinstance(candidate, dict)
+        or normaliser_sujet(candidate.get('sujet')) not in sujets_blacklistes
     ]
     fiches_filtrees = [
         fiche for fiche in fiches
-        if normaliser_sujet(fiche.get('sujet')) not in sujets_blacklistes
+        if not isinstance(fiche, dict)
+        or normaliser_sujet(fiche.get('sujet')) not in sujets_blacklistes
     ]
 
     return (
@@ -79,13 +89,26 @@ def nettoyer_blacklist(candidates, fiches):
     )
 
 def verifier_url(url):
-    if not url:
+    if not isinstance(url, str) or not url:
         return False
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'NoseyBot/1.0'}, method='HEAD')
         with urllib.request.urlopen(req, timeout=3) as resp:
             return resp.status == 200
-    except Exception:
+    except urllib.error.HTTPError as erreur:
+        if erreur.code not in (403, 405, 501):
+            return False
+    except urllib.error.URLError:
+        pass
+
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={'User-Agent': 'NoseyBot/1.0', 'Range': 'bytes=0-0'}
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return resp.status in (200, 206)
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError):
         return False
 
 def verifier_texte_complet(texte):
@@ -133,7 +156,10 @@ def verifier_valeur_ajoutee_et_contexte(fiche):
     return True, "OK"
 
 def valider_fiche(fiche):
-    texte = fiche.get('fait_texte', '').strip()
+    if not isinstance(fiche, dict):
+        return False, "Fiche invalide"
+
+    texte = str(fiche.get('fait_texte', '') or '').strip()
     if not texte:
         return False, "Texte vide"
 
@@ -147,7 +173,10 @@ def valider_fiche(fiche):
     if not texte_complet:
         return False, raison_texte
 
-    sources = fiche.get('sources', [])
+    sources = fiche.get('sources') or []
+    if not isinstance(sources, list):
+        return False, "Sources invalides"
+
     urls_sources = {
         source.get('url') for source in sources
         if isinstance(source, dict) and source.get('url')
@@ -193,6 +222,10 @@ def main():
     nouveaux_ajouts = 0
 
     for candidate in candidates:
+        if not isinstance(candidate, dict):
+            candidates_restantes.append(candidate)
+            continue
+
         cand_id = candidate.get('id')
         if cand_id in ids_existants:
             continue
@@ -201,12 +234,14 @@ def main():
         if est_valide:
             print(f"✅ Validée : {candidate.get('sujet')}")
             fiches_validees.append(candidate)
-            ids_existants.add(cand_id)
+            if cand_id:
+                ids_existants.add(cand_id)
             nouveaux_ajouts += 1
         else:
             print(f"❌ Rejetée ({candidate.get('sujet')}) : {raison}")
+            candidates_restantes.append(candidate)
 
-    # Nettoyage de la liste candidates après traitement
+    # Conserver les candidates rejetées pour pouvoir les vérifier à nouveau.
     sauvegarder_json(CANDIDATES_FILE, candidates_restantes)
     
     if nouveaux_ajouts > 0 or fiches_retirees > 0:

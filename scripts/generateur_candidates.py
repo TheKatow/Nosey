@@ -13,17 +13,12 @@ import os
 from google import genai
 from google.genai import types
 
-cle_api = os.environ.get('GEMINI_API_KEY')
-if not cle_api:
-    raise RuntimeError(
-        "GEMINI_API_KEY est absente. Définissez-la dans vos secrets GitHub."
-    )
-
-client = genai.Client(api_key=cle_api)
-MODELE_GEMINI = 'gemini-3.6-flash'
+client = None
+MODELE_GEMINI = 'gemini-2.5-flash'
 CONFIG_GEMINI_SANS_AFC = types.GenerateContentConfig(
     automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
 )
+GEMINI_LIMITEE = False
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,6 +36,10 @@ FICHES_FILE = 'data/fiches.json'
 SOURCES_FIABLES_FILE = 'data/sources_fiables.json'
 RECHERCHES_FILE = 'data/recherches.json'
 CATEGORIES_FILE = 'data/categories_recherche.json'
+CATEGORIES_GENERIQUES = {
+    'animal', 'science', 'architecture', 'histoire',
+    'culture', 'geographie', 'sport', 'nature'
+}
 
 MOTS_CLES_VALEUR = [
     'plus long', 'plus grand', 'plus haut', 'plus profond', 'plus ancien', 
@@ -138,16 +137,21 @@ class ResultatsBingParser(HTMLParser):
             self.texte_courant = []
 
 def charger_json(fichier):
-    if os.path.exists(fichier):
-        try:
-            with open(fichier, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            return []
-    return []
+    if not fichier or not os.path.exists(fichier):
+        return []
+
+    try:
+        with open(fichier, 'r', encoding='utf-8') as f:
+            donnees = json.load(f)
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return []
+
+    return donnees if isinstance(donnees, list) else []
 
 def sauvegarder_json(fichier, donnees):
-    os.makedirs(os.path.dirname(fichier), exist_ok=True)
+    dossier = os.path.dirname(fichier)
+    if dossier:
+        os.makedirs(dossier, exist_ok=True)
     with open(fichier, 'w', encoding='utf-8') as f:
         json.dump(donnees, f, ensure_ascii=False, indent=2)
 
@@ -250,6 +254,7 @@ def sommer_articles_en_faits(articles):
         f"[{index}] {article['title']}\n{article['extract']}"
         for index, article in enumerate(articles_exploitables, start=1)
     )
+
     prompt = f"""
 Tu es l'éditeur de l'application Nosey. Pour chaque extrait Wikipédia numéroté ci-dessous, écris un fait marquant en expliquant ce qui le distingue de la situation habituelle.
 
@@ -268,9 +273,14 @@ Consignes strictes pour chaque fait :
 Réponds uniquement avec un objet JSON dont les clés sont les numéros entre guillemets et les valeurs les faits, sans titre ni formatage Markdown. Ne mélange pas les articles.
 """
 
+    client_gemini = obtenir_client_gemini()
+    if client_gemini is None:
+        logger.warning("GEMINI_API_KEY absente ; utilisation du fait extrait de Wikipédia.")
+        return {}
+
     for tentative in range(3):
         try:
-            response = client.models.generate_content(
+            response = client_gemini.models.generate_content(
                 model=MODELE_GEMINI,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -294,6 +304,7 @@ Réponds uniquement avec un objet JSON dont les clés sont les numéros entre gu
         except Exception as erreur:
             erreur_texte = str(erreur)
             if '429' in erreur_texte or 'RESOURCE_EXHAUSTED' in erreur_texte:
+                GEMINI_LIMITEE = True
                 logger.warning(
                     "Quota Gemini atteint pour le lot de %d articles; "
                     "l'extraction Wikipédia locale sera utilisée.",
@@ -309,13 +320,85 @@ Réponds uniquement avec un objet JSON dont les clés sont les numéros entre gu
             time.sleep(delai)
     return {}
 
+
+def obtenir_client_gemini():
+    global client
+    if client is None:
+        cle_api = os.environ.get('GEMINI_API_KEY')
+        if not cle_api:
+            return None
+        client = genai.Client(api_key=cle_api)
+    return client
+
+
 def sommer_article_en_fait(sujet, extract_texte):
-    """Conserve le traitement unitaire utilisé par structurer_fiche."""
-    faits = sommer_articles_en_faits([{
-        'title': sujet,
-        'extract': extract_texte
-    }])
-    return faits.get(sujet) or extraire_fait_depuis_wikipedia(sujet, extract_texte)
+    """Utilise Gemini pour transformer un extrait Wikipédia en un fait marquant."""
+    global GEMINI_LIMITEE
+    if not extract_texte or len(extract_texte.strip()) < 50:
+        return ""
+
+    fait_secours = extraire_fait_depuis_wikipedia(sujet, extract_texte)
+    client_gemini = obtenir_client_gemini()
+    if client_gemini is None:
+        logger.warning("GEMINI_API_KEY absente ; utilisation du fait extrait de Wikipédia.")
+        return fait_secours
+
+    prompt = f"""
+Tu es l'éditeur de l'application Nosey. Résume l'article Wikipédia sur « {sujet} » en 2 ou 3 phrases.
+
+Extrait source :
+{extract_texte}
+
+Consignes strictes :
+1. Rédige un fait captivant de 15 à 80 mots maximum qui se termine par un point.
+2. Le fait DOIT obligatoirement contenir :
+   - Une donnée chiffrée (avec mesure, quantité ou date).
+   - Un exemple d'usage, de réalisation, d'effet ou de particularité unique.
+   - Une localisation explicite (pays, ville, région ou milieu naturel).
+3. INTERDICTION ABSOLUE des phrases d'introduction vagues ou génériques (ex: "X peut être déterminé selon divers critères...").
+4. Si l'extrait ne contient aucun fait précis ou exemple concret, réponds exactement "INVALIDE".
+
+Formate la réponse sous forme de texte brut sans guillemets ni puces.
+"""
+
+    try:
+        response = None
+        for tentative in range(2):
+            try:
+                response = client_gemini.models.generate_content(
+                    model=MODELE_GEMINI,
+                    contents=prompt,
+                    config=CONFIG_GEMINI_SANS_AFC,
+                )
+                break
+            except Exception as erreur:
+                erreur_texte = str(erreur)
+                quota_epuise = '429' in erreur_texte or 'RESOURCE_EXHAUSTED' in erreur_texte
+                if quota_epuise:
+                    GEMINI_LIMITEE = True
+                    logger.warning("Quota Gemini épuisé ; utilisation du fait Wikipédia.")
+                    return fait_secours
+                est_indisponible = '503' in erreur_texte or 'UNAVAILABLE' in erreur_texte
+                if not est_indisponible or tentative == 1:
+                    logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
+                    return fait_secours
+                delai = 2 ** tentative
+                logger.warning("Gemini indisponible pour '%s' ; tentative dans %d s.", sujet, delai)
+                time.sleep(delai)
+
+        if response is None:
+            return fait_secours
+
+        resultat = str(getattr(response, 'text', '') or '').strip()
+        if re.fullmatch(r'INVALIDE[.!]?', resultat, re.IGNORECASE):
+            logger.info("Gemini a rejeté l'extrait de '%s' : fait insuffisant.", sujet)
+            return fait_secours
+
+        return resultat or fait_secours
+    except Exception as erreur:
+        logger.warning("Erreur API Gemini pour '%s' : %s", sujet, erreur)
+        return fait_secours
+
 
 def extraire_localisation(fait_texte):
     correspondance = re.search(
@@ -574,10 +657,10 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
         with urllib.request.urlopen(req, timeout=5) as resp:
             data = json.loads(resp.read().decode('utf-8'))
             resultats = data.get('query', {}).get('search', [])
-            
+
             if not resultats:
                 return None
-            
+
             titres_a_tester = list(dict.fromkeys(
                 resultat.get('title', '') for resultat in resultats
                 if resultat.get('title')
@@ -623,7 +706,7 @@ def recuperer_fait_remarquable(requetes_recherche, sources_fiables, domaine, the
         raise
     except Exception as e:
         logger.exception("Erreur recherche %s (%s) : %s", domaine, requete, e)
-    
+
     return None
 
 def choisir_sujet_dynamique(categories, historique, sujets_exclus):
@@ -647,6 +730,8 @@ def choisir_sujet_dynamique(categories, historique, sujets_exclus):
     return None, None
 
 def main():
+    global GEMINI_LIMITEE
+    GEMINI_LIMITEE = False
     logger.info("Recherche d'articles extraordinaires pour Nosey...")
 
     sujets_fiches = charger_sujets_fiches_existantes()
@@ -663,11 +748,16 @@ def main():
         logger.error("Configuration absente (categories_recherche.json ou sources_fiables.json).")
         return
 
-    categorie, sujet_recherche = choisir_sujet_dynamique(
-        categories,
-        historique_recherches,
-        sujets_fiches | sujets_candidates
-    )
+    try:
+        categorie, sujet_recherche = choisir_sujet_dynamique(
+            categories,
+            historique_recherches,
+            sujets_fiches | sujets_candidates
+        )
+    except LimitationReseau as erreur:
+        logger.warning("%s. Recherche arrêtée pour éviter des appels répétés.", erreur)
+        return 75
+
     if not categorie or not sujet_recherche:
         logger.info("Aucun nouveau sujet disponible dans les catégories actuelles.")
         return
@@ -687,10 +777,16 @@ def main():
         logger.warning("%s. Sujet reporté : '%s'.", erreur, sujet_recherche)
         return 75
 
-    if fiche:
+    sujets_deja_enregistres = {
+        normaliser_sujet(entree.get('sujet'))
+        for entree in historique_recherches
+        if isinstance(entree, dict) and entree.get('sujet')
+    }
+    if normaliser_sujet(sujet_recherche) not in sujets_deja_enregistres:
         historique_recherches.append({'categorie': nom_categorie, 'sujet': sujet_recherche})
         sauvegarder_json(RECHERCHES_FILE, historique_recherches)
-        
+
+    if fiche:
         sujet = normaliser_sujet(fiche['sujet'])
         if sujet not in sujets_fiches and sujet not in sujets_candidates:
             logger.info("Nouvelle fiche candidate retenue : %s", fiche['sujet'])
@@ -700,6 +796,10 @@ def main():
     if ajouts > 0:
         sauvegarder_json(CANDIDATES_FILE, nouvelles_candidates)
         logger.info("%d nouvelle candidate enregistrée.", ajouts)
+
+    if GEMINI_LIMITEE and not fiche:
+        logger.warning("Aucune fiche obtenue avec le secours local après limitation Gemini.")
+        return 75
 
 if __name__ == "__main__":
     raise SystemExit(main() or 0)
