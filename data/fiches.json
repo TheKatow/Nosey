@@ -338,7 +338,7 @@
     "sujet": "Guillaume Le Gentil",
     "domaine": "ASTRONOMIE",
     "theme": "Découverte SCIENCES",
-    "fait_texte": "Pour observer les transits de Vénus de 1761 et 1769, l’astronome français Guillaume Le Gentil entreprit deux expéditions vers l’océan Indien. Un retard de navigation l’empêcha d’observer le premier depuis la terre ferme, puis des nuages masquèrent le second à Manille. Ces passages de Vénus, séparés de huit ans mais très rares à l’échelle historique, étaient attendus pour mesurer la distance entre la Terre et le Soleil. Après près de onze ans d’absence, Le Gentil rentra en France en 1771 sans avoir pu observer le phénomène.",
+    "fait_texte": "Né à Coutances, l’astronome Guillaume Le Gentil tenta en vain d’observer le transit de Vénus en 1761 puis en 1769. Ce phénomène rare devait permettre de déterminer avec précision la distance entre la Terre et le Soleil.",
     "categories_wikipedia": [
       {
         "ns": 14,
@@ -542,7 +542,7 @@
         "extrait": "Source externe référencée par Wikipédia."
       }
     ],
-    "localisation": "Coutances le",
+    "localisation": "Coutances",
     "image_url": "",
     "emojis": {
       "positif": "🌠",
@@ -1294,7 +1294,7 @@
     "sujet": "Abomey",
     "domaine": "CULTURE",
     "theme": "Découverte HISTOIRE",
-    "fait_texte": "À Abomey, au Bénin, le site des palais royaux couvre 47 hectares et rassemble dix palais édifiés par les souverains du Dahomey entre 1625 et 1900. Certains sont juxtaposés, d’autres superposés : leurs cours successives et leurs bas-reliefs polychromes forment un ensemble fortifié architecturalement unique, inscrit au patrimoine mondial de l’UNESCO.",
+    "fait_texte": "Au Bénin, les palais royaux d’Abomey couvrent 47 hectares et comprennent dix palais. Édifiés sous les douze rois du Dahomey qui se sont succédé de 1625 à 1900, certains sont juxtaposés et d’autres superposés ; l’UNESCO les qualifie d’ensemble architectural unique.",
     "categories_wikipedia": [
       {
         "ns": 14,
@@ -1341,25 +1341,20 @@
         "title": "Catégorie:Ville membre de l'Association internationale des maires francophones"
       }
     ],
-    "source_nom": "Wikipédia",
-    "source_url": "https://fr.wikipedia.org/wiki/Abomey",
+    "source_nom": "UNESCO",
+    "source_url": "https://whc.unesco.org/fr/list/323/",
     "sources": [
       {
-        "nom": "Wikipédia",
-        "url": "https://fr.wikipedia.org/wiki/Abomey"
-      },
-      {
-        "nom": "Encyclopaedia Britannica",
-        "url": "https://www.britannica.com/place/Abomey-Benin",
-        "extrait": "Probably founded in the early 17th century, it soon became the capital of the kingdom of Abomey (later Dahomey; the country’s …"
-      },
-      {
         "nom": "UNESCO",
-        "url": "https://whc.unesco.org/en/list/323/",
-        "extrait": "Le site des palais royaux d’Abomey couvre 47 hectares et comprend dix palais ; l’ensemble est architecturalement unique."
+        "url": "https://whc.unesco.org/fr/list/323/"
+      },
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Abomey",
+        "extrait": "Article de synthèse sur la ville et les palais royaux d’Abomey."
       }
     ],
-    "localisation": "XVIIe siècle par le roi",
+    "localisation": "Bénin",
     "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Place_Goho_Abomey.jpg/960px-Place_Goho_Abomey.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     "emojis": {
       "positif": "🎨",
@@ -1371,8 +1366,77 @@
     "sujet": "Excavatrice à godets",
     "domaine": "INGENIERIE",
     "theme": "Découverte INGENIERIE",
-    "fait_texte": "Les excavatrices à godets figurent parmi les plus grands véhicules terrestres jamais construits. La Bagger 293, utilisée dans la mine de lignite de Hambach en Allemagne, atteint 96 mètres de haut et 225 mètres de long pour une masse d’environ 14 200 tonnes. Sa roue de plus de 21 mètres peut porter jusqu’à 20 godets, chacun pouvant contenir 15 m³ de matériau : elle creuse ainsi en continu à une échelle hors norme.",
-    "localisation": "Allemagne",
+    "fait_texte": "En Allemagne, la Bagger 293, construite par TAKRAF, est présentée par le Livre Guinness des records comme la plus grande excavatrice à godets et le véhicule terrestre le plus lourd.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de Wikipédia avec notice d'autorité"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Excavatrice"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des dictionnaires ou encyclopédies généralistes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1417"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant un modèle Bases inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Génie mécanique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Géologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Mine/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Records/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Technologies/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Record du monde"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche génie civil"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche géologie"
+      }
+    ],
     "source_nom": "Wikipédia",
     "source_url": "https://fr.wikipedia.org/wiki/Excavatrice_%C3%A0_godets",
     "sources": [
@@ -1381,12 +1445,18 @@
         "url": "https://fr.wikipedia.org/wiki/Excavatrice_%C3%A0_godets"
       },
       {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/technology/bucket-wheel-excavator",
+        "extrait": "Source externe référencée par Wikipédia."
+      },
+      {
         "nom": "TAKRAF",
         "url": "https://www.takraf.com/portfolio/detail/bucket-wheel-excavators/",
         "extrait": "Le fabricant décrit ces machines comme des excavatrices continues utilisées dans les mines à ciel ouvert et intégrées à des systèmes de convoyage."
       }
     ],
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Bucket_wheel_excavator_in_Ferropolis.jpg/250px-Bucket_wheel_excavator_in_Ferropolis.jpg",
+    "localisation": "Allemagne",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Bucket_wheel_excavator_in_Ferropolis.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     "emojis": {
       "positif": "⚙️",
       "passer": "🔧"
