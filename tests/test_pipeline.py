@@ -5,7 +5,7 @@ import unittest
 import urllib.error
 from unittest import mock
 
-from scripts import generateur_candidates, moteur_verification
+from scripts import actualiser_referentiels, generateur_candidates, moteur_verification
 
 
 class RechercheCandidatesTests(unittest.TestCase):
@@ -135,6 +135,81 @@ class VerificationCandidatesTests(unittest.TestCase):
                 candidates_apres = json.load(fichier)
 
         self.assertEqual(candidates_apres, [candidate])
+
+
+class ActualisationReferentielsTests(unittest.TestCase):
+    def test_only_recognized_source_domains_are_added_once(self):
+        sources = [
+            {"nom": "UNESCO", "domaines": ["whc.unesco.org"]},
+            {"nom": "Source existante", "domaines": ["example.org"]},
+        ]
+
+        updated, added = actualiser_referentiels.ajouter_sources_reconnues(sources)
+
+        self.assertEqual(len(added), len(actualiser_referentiels.SOURCES_RECONNUES) - 1)
+        self.assertEqual(
+            len(actualiser_referentiels.ajouter_sources_reconnues(updated)[1]),
+            0,
+        )
+        self.assertIn(
+            {"nom": "Source existante", "domaines": ["example.org"]},
+            updated,
+        )
+
+    def test_only_relevant_categories_from_reliably_sourced_pages_are_added(self):
+        sources = [{"nom": "UNESCO", "domaines": ["whc.unesco.org"]}]
+        fiches = [
+            {
+                "domaine": "HISTOIRE",
+                "theme": "Découverte HISTOIRE",
+                "sources": [{"url": "https://whc.unesco.org/en/list/323/"}],
+                "categories_wikipedia": [
+                    {"ns": 14, "title": "Catégorie:Monument_remarquable"},
+                    {"ns": 14, "title": "Catégorie:Portail:Histoire/Articles liés"},
+                    {"ns": 14, "title": "Catégorie:Ville au Bénin"},
+                ],
+            },
+            {
+                "domaine": "NATURE",
+                "theme": "Découverte NATURE",
+                "sources": [{"url": "https://untrusted.example/page"}],
+                "categories_wikipedia": [
+                    {"ns": 14, "title": "Catégorie:Espèce rare"},
+                ],
+            },
+        ]
+
+        updated, added = actualiser_referentiels.categories_issues_des_fiches(
+            [], fiches, sources
+        )
+
+        self.assertEqual(
+            updated,
+            [{
+                "categorie": "HISTOIRE",
+                "domaine": "HISTOIRE",
+                "categorie_wikipedia": "Monument_remarquable",
+            }],
+        )
+        self.assertEqual(added, updated)
+
+    def test_requested_fiches_have_complete_notable_summaries(self):
+        with open("data/fiches.json", encoding="utf-8") as fichier:
+            fiches = json.load(fichier)
+
+        fiches_par_sujet = {fiche.get("sujet"): fiche for fiche in fiches}
+        for sujet in ("Excavatrice à godets", "Abomey", "Guillaume Le Gentil"):
+            with self.subTest(sujet=sujet):
+                fiche = fiches_par_sujet[sujet]
+                texte = fiche["fait_texte"]
+                self.assertTrue(texte.endswith((".", "!", "?")))
+                self.assertEqual(
+                    moteur_verification.verifier_texte_complet(texte),
+                    (True, "OK"),
+                )
+                self.assertTrue(
+                    moteur_verification.verifier_valeur_ajoutee_et_contexte(fiche)[0]
+                )
 
 
 if __name__ == "__main__":

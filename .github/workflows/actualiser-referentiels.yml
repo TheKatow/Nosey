@@ -1,0 +1,38 @@
+name: Actualiser les sources et catégories fiables
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  actualiser-referentiels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v5
+
+      - name: Configurer Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Actualiser les sources reconnues et les catégories sourcées
+        run: python scripts/actualiser_referentiels.py
+
+      - name: Enregistrer les modifications
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/sources_fiables.json data/categories_recherche.json
+
+          if git diff --cached --quiet; then
+            echo "Aucune mise à jour des référentiels."
+          else
+            git commit -m "auto: actualisation des sources et catégories fiables"
+            git push
+          fi

@@ -26,5 +26,25 @@
   {
     "nom": "CNRS",
     "domaines": ["cnrs.fr"]
+  },
+  {
+    "nom": "UNESCO",
+    "domaines": ["whc.unesco.org"]
+  },
+  {
+    "nom": "NASA",
+    "domaines": ["nasa.gov"]
+  },
+  {
+    "nom": "Agence spatiale européenne (ESA)",
+    "domaines": ["esa.int"]
+  },
+  {
+    "nom": "Bibliothèque nationale de France",
+    "domaines": ["bnf.fr"]
+  },
+  {
+    "nom": "TAKRAF",
+    "domaines": ["takraf.com"]
   }
 ]
