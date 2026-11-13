@@ -37,6 +37,9 @@ async function chargerFicheDuJour() {
   try {
     const reponse = await fetch('data/fiches.json');
     fichesDisponibles = await reponse.json();
+    fichesDisponibles.sort((ficheA, ficheB) =>
+      String(ficheA.id || '').localeCompare(String(ficheB.id || ''), undefined, { numeric: true })
+    );
     let blacklist = [];
     try {
       const reponseBlacklist = await fetch('data/blacklist.json');
@@ -116,7 +119,7 @@ function afficherFiche(fiche) {
 
   carteContainer.innerHTML = `
     <div class="navigation-fiche">
-      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${indexFicheActuelle <= 0 ? 'disabled' : ''}>&lt;</button>
+      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${indexFicheActuelle <= 0 ? 'disabled' : ''}>←</button>
       <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
@@ -143,7 +146,7 @@ function afficherFiche(fiche) {
         </div>
       </footer>
       </article>
-      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante" ${indexFicheActuelle >= fichesDisponibles.length - 1 ? 'disabled' : ''}>&gt;</button>
+      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante" ${indexFicheActuelle >= fichesDisponibles.length - 1 ? 'disabled' : ''}>→</button>
     </div>
   `;
 }
