@@ -43,42 +43,45 @@ body {
 }
 
 .navigation-fiche {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  position: relative;
   width: 100%;
 }
 
-.navigation-fiche .carte {
-  flex: 1;
-  min-width: 0;
-}
-
 .fleche-navigation {
-  flex: 0 0 36px;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
   width: 36px;
   height: 72px;
-  border: 1px solid rgba(31, 41, 55, 0.12);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.58);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--text-primary);
   font-size: 1.7rem;
   line-height: 1;
   cursor: pointer;
   opacity: 0.62;
-  transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fleche-navigation:first-child {
+  left: 8px;
+}
+
+.fleche-navigation:last-child {
+  right: 8px;
 }
 
 .fleche-navigation:hover,
 .fleche-navigation:focus-visible {
-  background: rgba(255, 255, 255, 0.9);
   opacity: 1;
   outline: none;
-  transform: scale(1.04);
+  transform: translateY(-50%) scale(1.04);
 }
 
 .fleche-navigation:active {
-  transform: scale(0.96);
+  transform: translateY(-50%) scale(0.96);
 }
 
 .fleche-navigation:disabled {
