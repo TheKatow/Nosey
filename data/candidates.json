@@ -1,1 +1,114 @@
-[]
+[
+  {
+    "id": "Q1520397",
+    "sujet": "Châtaignier des cent chevaux",
+    "domaine": "PLANTES",
+    "theme": "Découverte NATURE",
+    "fait_texte": "Parmi les 20 000 arbres remarquables répertoriés en Italie, il fait partie des 150 arbres déclarés « d’intérêt historique et monumental exceptionnel » de ce pays. Le châtaignier des cent chevaux (italien : Castagno dei Cento Cavalli et sicilien : Castagnu dê Centu Cavaddi) est le plus grand et le plus ancien châtaignier connu en Europe.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Arbre remarquable en Italie"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en sicilien"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article géolocalisé en Italie"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article géolocalisé sur Terre"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant une Infobox"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Châtaignier remarquable"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Culture en Sicile"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Etna"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page avec coordonnées similaires sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page avec des cartes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Biologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Bois et forêt/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Botanique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Europe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Italie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sicile/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Projet:Biologie/Pages liées"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche Sicile"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:ébauche arbre"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ch%C3%A2taignier_des_cent_chevaux",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Ch%C3%A2taignier_des_cent_chevaux"
+      },
+      {
+        "nom": "Bibliothèque nationale de France",
+        "url": "https://gallica.bnf.fr/ark:/12148/bpt6k65774019",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "Italie",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Castagno_dei_Cento_Cavalli.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "emojis": {
+      "positif": "🌱",
+      "passer": "🥀"
+    }
+  }
+]
