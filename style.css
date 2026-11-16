@@ -51,18 +51,17 @@ body {
   position: absolute;
   z-index: 1;
   top: 50%;
-  width: 36px;
-  height: 72px;
+  width: 40px;
+  height: 64px;
   border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--text-primary);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
   font-size: 1.7rem;
   line-height: 1;
   cursor: pointer;
-  opacity: 0.62;
   transform: translateY(-50%);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .fleche-navigation:first-child {
@@ -75,18 +74,14 @@ body {
 
 .fleche-navigation:hover,
 .fleche-navigation:focus-visible {
-  opacity: 1;
-  outline: none;
+  background: rgba(0, 0, 0, 0.7);
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
   transform: translateY(-50%) scale(1.04);
 }
 
 .fleche-navigation:active {
   transform: translateY(-50%) scale(0.96);
-}
-
-.fleche-navigation:disabled {
-  cursor: not-allowed;
-  opacity: 0.25;
 }
 
 /* --- CARTE --- */

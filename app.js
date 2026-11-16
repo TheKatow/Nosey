@@ -119,7 +119,7 @@ function afficherFiche(fiche) {
 
   carteContainer.innerHTML = `
     <div class="navigation-fiche">
-      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente" ${indexFicheActuelle <= 0 ? 'disabled' : ''}>←</button>
+      <button class="fleche-navigation" onclick="afficherFichePrecedente()" aria-label="Revenir à la fiche précédente" title="Fiche précédente">←</button>
       <article class="carte ${fiche.image_url ? 'avec-image' : ''}" data-domaine="${fiche.domaine || ''}" ${imageBackground}>
       <header class="carte-header">
         <span class="badge-domaine">${fiche.domaine || 'CURIOSITÉ'}</span>
@@ -146,7 +146,7 @@ function afficherFiche(fiche) {
         </div>
       </footer>
       </article>
-      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante" ${indexFicheActuelle >= fichesDisponibles.length - 1 ? 'disabled' : ''}>→</button>
+      <button class="fleche-navigation" onclick="afficherFicheSuivante()" aria-label="Afficher la fiche suivante" title="Fiche suivante">→</button>
     </div>
   `;
 }
@@ -169,15 +169,15 @@ function reagir(ficheId, typeReaction) {
 }
 
 function afficherFicheSuivante() {
-  if (indexFicheActuelle >= fichesDisponibles.length - 1) return;
-  indexFicheActuelle += 1;
+  if (fichesDisponibles.length === 0) return;
+  indexFicheActuelle = (indexFicheActuelle + 1) % fichesDisponibles.length;
   ficheActuelle = fichesDisponibles[indexFicheActuelle];
   afficherFiche(ficheActuelle);
 }
 
 function afficherFichePrecedente() {
-  if (indexFicheActuelle <= 0) return;
-  indexFicheActuelle -= 1;
+  if (fichesDisponibles.length === 0) return;
+  indexFicheActuelle = (indexFicheActuelle - 1 + fichesDisponibles.length) % fichesDisponibles.length;
   ficheActuelle = fichesDisponibles[indexFicheActuelle];
   afficherFiche(ficheActuelle);
 }
