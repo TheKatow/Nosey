@@ -1,1 +1,70 @@
-[]
+[
+  {
+    "id": "Q941555",
+    "sujet": "Pwyll (cratère)",
+    "domaine": "PHENOMENES_NATURELS",
+    "theme": "Découverte GEOGRAPHIE",
+    "fait_texte": "La région centrale du cratère, sombre et nettement visible sur les images, mesure environ 26 kilomètres de diamètre, tandis que les régions blanches et très brillantes représentent les zones vers lesquelles la matière a été éjectée lors de l'impact, ces zones s'étendant sur près de 1 000 kilomètres autour du cratère. Pwyll est un cratère d'impact situé sur Europe, l'un des satellites naturels de la planète Jupiter.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article géolocalisé extraterrestre"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant une Infobox"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Cratère d'impact"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Géographie d'Europe"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page avec coordonnées différentes sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Astronomie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Jupiter/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences de la Terre et de l'Univers/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Système solaire/Articles liés"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Pwyll_(crat%C3%A8re)",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Pwyll_(crat%C3%A8re)"
+      },
+      {
+        "nom": "NASA",
+        "url": "http://photojournal.jpl.nasa.gov/catalog/PIA00502",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "les images",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Europa_Pwyll.jpg/960px-Europa_Pwyll.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "🌋",
+      "passer": "🌪️"
+    }
+  }
+]
