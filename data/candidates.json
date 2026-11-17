@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "id": "Q1771174",
+    "sujet": "Arbres remarquables de France",
+    "domaine": "PLANTES",
+    "theme": "Découverte NATURE",
+    "fait_texte": "Certains ont été classés « monument naturel » par l'État dans les années 1930 et le dernier est le platane de Cézy en 2018 après six ans de procédure.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Arbre remarquable en France"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un lien mort"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant le modèle Dictionnaires inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article à référence nécessaire"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local différent sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Liste d'arbres en France"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page avec des cartes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P856"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant le modèle Autorité inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant un modèle Bases inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Biologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Bois et forêt/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Botanique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Europe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:France/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Projet:Biologie/Pages liées"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Arbres_remarquables_de_France",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Arbres_remarquables_de_France"
+      },
+      {
+        "nom": "Bibliothèque nationale de France",
+        "url": "https://gallica.bnf.fr/ark:/12148/bpt6k6541382q/f12.item",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "les années",
+    "image_url": "",
+    "emojis": {
+      "positif": "🌱",
+      "passer": "🥀"
+    }
+  }
+]
