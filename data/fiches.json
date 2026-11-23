@@ -1945,5 +1945,121 @@
       "positif": "🌱",
       "passer": "🥀"
     }
+  },
+  {
+    "id": "Q196",
+    "sujet": "Cerise",
+    "domaine": "PLANTES",
+    "theme": "Découverte NATURE",
+    "fait_texte": "Ce petit fruit compte environ 50 calories pour 100 grammes. Il en existe plus de 600 variétés, dont les plus connues sont la Burlat et la Cerise de Montmorency.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de Wikipédia avec notice d'autorité"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références/Liste complète"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références depuis décembre 2023"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références depuis mars 2017"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Cerise"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Fruit rouge"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Fruit à noyau"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des dictionnaires ou encyclopédies généralistes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1296"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1417"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P5395"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P7666"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Agriculture et agronomie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Alimentation et gastronomie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Biologie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Botanique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Plantes utiles/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Société/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Projet:Biologie/Pages liées"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Cerise",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Cerise"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/plant/cherry",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "existe plus de",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Bing_Cherries_%28USDA_ARS%29.jpg/960px-Bing_Cherries_%28USDA_ARS%29.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "🌱",
+      "passer": "🥀"
+    }
   }
 ]
