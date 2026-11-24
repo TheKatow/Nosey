@@ -2061,5 +2061,169 @@
       "positif": "🌱",
       "passer": "🥀"
     }
+  },
+  {
+    "id": "Q3516547",
+    "sujet": "Taïg Khris",
+    "domaine": "INGENIERIE",
+    "theme": "Découverte INGENIERIE",
+    "fait_texte": "Taïg Khris, de son nom de naissance Taag Khris Gattos, né le 27 juillet 1975 à Alger, est un athlète et entrepreneur gréco-algérien, triple champion du monde de roller sur rampe et vainqueur des X Games, des Gravity Games et du tournoi ASA. Il a fondé en janvier 2014 une société de télécommunications appelée OnOff Telecom dont il est le PDG.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en anglais"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un lien mort"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de Wikipédia avec notice d'autorité"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références/Liste complète"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article manquant de références depuis septembre 2018"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant le modèle Dictionnaires inactif"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant une Infobox"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Naissance en juillet 1975"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Naissance à Alger"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases relatives à la musique"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1953"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P434"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P856"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Participant à Danse avec les stars"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Participant à Koh-Lanta"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Afrique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Algérie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Biographie/Articles liés/Culture et arts"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Biographie/Articles liés/Sport"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Europe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:France/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Grèce/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Maghreb/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Monde arabe/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Records/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Roller et skateboard/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Record du monde"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Roller"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Sportif algérien"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Sportif français"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Sportif grec"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Wikipédia:Article biographique"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/Ta%C3%AFg_Khris",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/Ta%C3%AFg_Khris"
+      },
+      {
+        "nom": "Bibliothèque nationale de France",
+        "url": "https://catalogue.bnf.fr/ark:/12148/cb165181248",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "Alger",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Taig_Khris_pic01.jpg/960px-Taig_Khris_pic01.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "emojis": {
+      "positif": "⚙️",
+      "passer": "🔧"
+    }
   }
 ]
