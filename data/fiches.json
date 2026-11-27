@@ -2785,5 +2785,225 @@
       "positif": "👑",
       "passer": "📏"
     }
+  },
+  {
+    "id": "Q560",
+    "sujet": "Hélium",
+    "domaine": "SUPERLATIFS",
+    "theme": "Découverte RECORDS",
+    "fait_texte": "L’hélium est l'élément chimique de numéro atomique 2, de symbole He. Son point d'ébullition est le plus bas parmi les corps connus, et il n'existe sous forme solide que s'il est soumis à une pression supérieure à 25 atmosphères.",
+    "categories_wikipedia": [
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en anglais"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un appel à traduction en italien"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article contenant un lien mort"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de Wikipédia avec notice d'autorité"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en allemand"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en basque"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en espagnol"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en flamand occidental"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article de qualité en persan"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article utilisant une Infobox"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article à citation nécessaire"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Article à référence nécessaire"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Bon article en arabe"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Bon article en suédois"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Catégorie Commons avec lien local identique sur Wikidata"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Gaz à l'état de traces"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Hélium"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases externes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des bases relatives à la santé"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page pointant vers des dictionnaires ou encyclopédies généralistes"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P1417"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P2115"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P3219"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P3222"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P3365"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P4223"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P4342"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P486"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P5019"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P592"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P6058"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P6706"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P715"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P7305"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P7982"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Page utilisant P8313"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Alimentation et gastronomie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Chimie/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Froid et climatisation/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Physique/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Records/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Sciences/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Société/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Portail:Technologies/Articles liés"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Produit pétrolier"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Record"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Théorie de la plongée"
+      },
+      {
+        "ns": 14,
+        "title": "Catégorie:Élément découvert par spectroscopie"
+      }
+    ],
+    "source_nom": "Wikipédia",
+    "source_url": "https://fr.wikipedia.org/wiki/H%C3%A9lium",
+    "sources": [
+      {
+        "nom": "Wikipédia",
+        "url": "https://fr.wikipedia.org/wiki/H%C3%A9lium"
+      },
+      {
+        "nom": "Encyclopaedia Britannica",
+        "url": "https://www.britannica.com/science/helium-chemical-element",
+        "extrait": "Source externe référencée par Wikipédia."
+      }
+    ],
+    "localisation": "une pression supérieure à",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Liquid_helium_superfluid_phase.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "emojis": {
+      "positif": "👑",
+      "passer": "📏"
+    }
   }
 ]
